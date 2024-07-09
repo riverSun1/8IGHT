@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { useAuth } from "@/contexts/auth.context";
 import AuthInput from "../_components/Input";
+import ArrowLeftSvg from "../_components/icons/ArrowLeftSvg";
 
 function SignUpPage() {
   const { signUp } = useAuth();
@@ -18,8 +19,12 @@ function SignUpPage() {
 
   return (
     <>
-      <button className="fixed top-" onClick={() => router.back()}>
-        취소하고 돌아가기
+      <button
+        className="absolute top-0 left-8 flex gap-2 items-center"
+        onClick={() => router.back()}
+      >
+        <ArrowLeftSvg color="#979798" width={20} height={20} />
+        <p className="text-[18px] text-neutral-500">취소하고 돌아가기</p>
       </button>
       <h1 className="font-bold text-[28px] text-center text-neutral-950">
         회원가입
@@ -43,7 +48,7 @@ function SignUpPage() {
             isPasswordCheck
             passwordNum={password}
           />
-          <p className="text-neutral-500 text-[14px] font-light">
+          <p className="text-neutral-400 text-[14px] font-[400]">
             영문 대소문자, 숫자, 특수문자를 3가지 이상으로 조합해 8자 이상 16자
             이하로 입력해주세요.
           </p>
