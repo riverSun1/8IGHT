@@ -12,6 +12,7 @@ const validationSchema = yup.object({
 
 const PostModal = ({ open, handleClose, addPost }) => {
   const [profileImage, setProfileImage] = useState('/images/profile-placeholder.png');
+  const [selectedImage, setSelectedImage] = useState(null);
 
   const formik = useFormik({
     initialValues: {
@@ -19,18 +20,25 @@ const PostModal = ({ open, handleClose, addPost }) => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      addPost({ ...values, profileImage });
+      addPost({ ...values, profileImage, image: selectedImage });
       handleClose();
     },
   });
 
   useEffect(() => {
     formik.resetForm();
+    setSelectedImage(null); // Reset selected image when modal opens
   }, [open]);
 
   const handleDescriptionChange = (event) => {
     const value = event.target.value;
     formik.handleChange(event);
+  };
+
+  const handleImageChange = (event) => {
+    if (event.target.files && event.target.files[0]) {
+      setSelectedImage(URL.createObjectURL(event.target.files[0]));
+    }
   };
 
   return (
@@ -53,11 +61,25 @@ const PostModal = ({ open, handleClose, addPost }) => {
           </div>
           <div className="border border-gray-300 rounded-lg p-4 space-y-4">
             <div className="flex items-center">
-              <IconButton component="span">
-                <PhotoCamera />
-              </IconButton>
-              <span className="ml-2 text-gray-500">이미지 추가</span>
+              <input
+                accept="image/*"
+                style={{ display: 'none' }}
+                id="file-upload"
+                type="file"
+                onChange={handleImageChange}
+              />
+              <label htmlFor="file-upload">
+                <IconButton component="span">
+                  <PhotoCamera />
+                </IconButton>
+                <span className="ml-2 text-gray-500">이미지 추가</span>
+              </label>
             </div>
+            {selectedImage && (
+              <div className="flex justify-center mb-4">
+                <img src={selectedImage} alt="Selected" className="max-h-40 rounded-lg" />
+              </div>
+            )}
             <TextField
               fullWidth
               id="postContent"

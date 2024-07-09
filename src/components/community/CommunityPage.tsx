@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState } from 'react';
-import Header from '../Header';
+import Header from '../../app/(providers)/_components/Header';
 import SideBar from './SideBar';
-import TeamModal from './TeamModal';
 import PostModal from './PostModal';
 import PostList from './PostList';
 
@@ -18,10 +17,6 @@ const CommunityPage = () => {
 
   const handlePostOpen = () => setPostModalOpen(true);
   const handlePostClose = () => setPostModalOpen(false);
-
-  const addTeam = (team) => {
-    setTeams([...teams, team]);
-  };
 
   const addPost = (post) => {
     setPosts([...posts, post]);
@@ -45,8 +40,7 @@ const CommunityPage = () => {
             </div>
           </main>
         </div>
-      </div>
-      <TeamModal open={modalOpen} handleClose={handleClose} addTeam={addTeam} />
+      </div>    
       <PostModal open={postModalOpen} handleClose={handlePostClose} addPost={addPost} />
     </div>
   );

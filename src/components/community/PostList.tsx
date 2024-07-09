@@ -1,21 +1,23 @@
-"use client";
-
 import React from 'react';
-import { List, ListItem, ListItemText } from '@mui/material';
 
 const PostList = ({ posts }) => {
-  if (!posts.length) {
-    return <p className="text-center text-gray-500">게시글이 없습니다.</p>;
-  }
-
   return (
-    <List>
-      {posts.map((post, index) => (
-        <ListItem key={index}>
-          <ListItemText primary={post} />
-        </ListItem>
-      ))}
-    </List>
+    <div>
+      {posts.length === 0 ? (
+        <p>게시물이 없습니다.</p>
+      ) : (
+        posts.map((post, index) => (
+          <div key={index} className="mb-4 p-4 border rounded">
+            <p>{post.postContent}</p>
+            {post.image && (
+              <div className="flex justify-center mb-4">
+                <img src={post.image} alt="Post" className="max-h-40 rounded-lg" />
+              </div>
+            )}
+          </div>
+        ))
+      )}
+    </div>
   );
 };
 
