@@ -8,11 +8,19 @@ import ArrowLeftSvg from "../_components/icons/ArrowLeftSvg";
 import AuthInput from "../_components/Input";
 import PhoneInputSection from "../_components/PhoneInputSection";
 
+export type handleCheckType = (successBoolean: boolean) => void;
+
 function SignUpPage() {
   const { signUp } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [isPhoneCheckSuccess, setIsPhoneCheckSuccess] =
+    useState<boolean>(false);
+
+  const handleCheck: handleCheckType = (successBoolean) => {
+    setIsPhoneCheckSuccess(successBoolean);
+  };
 
   const handleClickSignUp = async () => {
     signUp(email, password);
@@ -37,7 +45,7 @@ function SignUpPage() {
           labelText="이메일"
           setInput={setEmail}
         />
-        <PhoneInputSection />
+        <PhoneInputSection handleSuccess={handleCheck} />
         <div className="flex flex-col gap-[8px]">
           <AuthInput
             placeholder="비밀번호를 입력해주세요."

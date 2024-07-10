@@ -1,6 +1,5 @@
 "use client";
 
-import { CodeGlobalObj } from "@/app/api/auth/code-global/route";
 import axios from "axios";
 import {
   ChangeEventHandler,
@@ -9,6 +8,9 @@ import {
   useRef,
   useState,
 } from "react";
+
+import { CodeGlobalObj } from "@/app/api/auth/code-global/route";
+import { handleCheckType } from "../sign-up/page";
 import ArrowDownSvg from "./icons/ArrowDownSvg";
 
 // 인증번호를 입력해주세요.
@@ -25,7 +27,11 @@ const formatTime = (seconds: number): string => {
   return `0${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
 };
 
-function PhoneInputSection() {
+function PhoneInputSection({
+  handleSuccess,
+}: {
+  handleSuccess: handleCheckType;
+}) {
   const [selects, setSelects] = useState<CodeGlobalObj[] | null>(null);
   const [initial, setInitial] = useState<boolean>(false);
   const [timeOut, setTimeOut] = useState<boolean>(true);
@@ -63,9 +69,11 @@ function PhoneInputSection() {
   > = () => {
     if (randomNum === accessCode) {
       setIsSuccess(true);
+      handleSuccess(true);
       alert(`성공`);
     } else {
       setIsSuccess(false);
+      handleSuccess(false);
       alert(`실패`);
     }
   };
