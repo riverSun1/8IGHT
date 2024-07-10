@@ -4,8 +4,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { useAuth } from "@/contexts/auth.context";
-import AuthInput from "../_components/Input";
 import ArrowLeftSvg from "../_components/icons/ArrowLeftSvg";
+import AuthInput from "../_components/Input";
+import PhoneInputSection from "../_components/PhoneInputSection";
 
 function SignUpPage() {
   const { signUp } = useAuth();
@@ -36,6 +37,7 @@ function SignUpPage() {
           labelText="이메일"
           setInput={setEmail}
         />
+        <PhoneInputSection />
         <div className="flex flex-col gap-[8px]">
           <AuthInput
             placeholder="비밀번호를 입력해주세요."
