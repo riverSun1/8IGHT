@@ -6,7 +6,7 @@ function RootLayout({ children }: PropsWithChildren) {
   return (
     <TanstackQueryProvider>
       {children}
-      <ReactQueryDevtools />
+      <ReactQueryDevtools initialIsOpen={false} />
     </TanstackQueryProvider>
   );
 }
