@@ -13,4 +13,13 @@
   .button {
     @apply border border-black bg-slate-300 px-4 py-2 hover:brightness-95 active:brightness-75;
   }
+  .appearance-none {
+    -webkit-appearance: none; /* for chrome */
+    -moz-appearance: none; /* for firefox */
+    appearance: none;
+  }
+
+  .select-no-expand::-ms-expand {
+    display: none; /* for IE10,11 */
+  }
 }
