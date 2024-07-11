@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/supabase/client";
 import { v4 as uuidv4 } from "uuid";
-import { useAuth } from "@/contexts/auth.context"; // AuthContext 가져오기
+import { useAuth } from "@/contexts/auth.context";
 
 const supabase = createClient();
 
@@ -17,17 +17,10 @@ const Section = ({ label, children }) => (
 );
 
 const NewResumePage = () => {
+  const { isLoggedIn, me } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
-  const { isLoggedIn, me } = useAuth(); // 로그인 상태 및 유저 정보 확인
-
-  // 로그인하지 않은 경우 로그인 페이지로 리디렉션
-  useEffect(() => {
-    if (!isLoggedIn) {
-      router.push("/auth/log-in");
-    }
-  }, [isLoggedIn, router]);
 
   const [formData, setFormData] = useState({
     id: "",
@@ -45,11 +38,12 @@ const NewResumePage = () => {
     awards: [""],
     introduction: "",
     links: [""],
-    user_id: me?.id || "", // 유저 ID 추가
   });
 
   useEffect(() => {
-    if (id) {
+    if (!isLoggedIn) {
+      router.push("/log-in");
+    } else if (id) {
       const fetchResume = async () => {
         const { data, error } = await supabase
           .from("resumes")
@@ -65,7 +59,7 @@ const NewResumePage = () => {
       };
       fetchResume();
     }
-  }, [id]);
+  }, [id, isLoggedIn]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -109,7 +103,7 @@ const NewResumePage = () => {
     const resumeData = {
       ...formData,
       id: formData.id || uuidv4(), // 새로운 uuid 생성 또는 기존 id 사용
-      user_id: me?.id || "", // 유저 ID 추가
+      email: me?.email, // 로그인한 사용자의 이메일 사용
     };
 
     try {

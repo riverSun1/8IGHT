@@ -7,57 +7,64 @@ import FileButton from "../_components/FileButton";
 import WorkBox from "../_components/WorkBox";
 import Modal from "../../_components/Modal";
 import { createClient } from "@/supabase/client";
-import { useAuth } from "@/contexts/auth.context"; // AuthContext 가져오기
+import { useAuth } from "@/contexts/auth.context";
 
 interface WorkBoxType {
   id: string;
   title: string;
   email: string;
-  name: string;
-  phone: string;
+  fileURL?: string;
+  file_name?: string;
   created_at: string;
-  career: string[];
-  education: string[];
-  skills: string[];
-  awards: string[];
-  introduction: string;
-  links: string[];
 }
 
 const supabase = createClient();
 
 const ResumePage = () => {
+  const { isLoggedIn, me } = useAuth();
   const router = useRouter();
-  const { isLoggedIn, me } = useAuth(); // 로그인 상태 및 유저 정보 확인
   const [workBoxes, setWorkBoxes] = useState<WorkBoxType[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false); // 파일 업로드 모달 상태
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
 
-  // 로그인하지 않은 경우 로그인 페이지로 리디렉션
   useEffect(() => {
     if (!isLoggedIn) {
-      router.push("/auth/log-in");
+      router.push("/log-in");
+    } else {
+      const fetchResumes = async () => {
+        if (!me?.email) return;
+        const { data, error } = await supabase
+          .from("resumes")
+          .select("*")
+          .eq("email", me.email);
+
+        if (error) {
+          console.error("Error fetching resumes:", error);
+        } else {
+          setWorkBoxes(data);
+        }
+      };
+
+      const fetchFileUploads = async () => {
+        if (!me?.email) return;
+        const { data, error } = await supabase
+          .from("file_uploads")
+          .select("*")
+          .eq("email", me.email);
+
+        if (error) {
+          console.error("Error fetching file uploads:", error);
+        } else {
+          setWorkBoxes((prevBoxes) => [...prevBoxes, ...data]);
+        }
+      };
+
+      fetchResumes();
+      fetchFileUploads();
     }
-  }, [isLoggedIn, router]);
-
-  useEffect(() => {
-    const fetchResumes = async () => {
-      if (!me) return;
-      const { data, error } = await supabase
-        .from("resumes")
-        .select("*")
-        .eq("user_id", me.id);
-
-      if (error) {
-        console.error("Error fetching resumes:", error);
-      } else {
-        setWorkBoxes(data);
-      }
-    };
-
-    fetchResumes();
-  }, [me]);
+  }, [isLoggedIn, me]);
 
   const handleDelete = (id: string) => {
     setSelectedBoxId(id);
@@ -85,29 +92,49 @@ const ResumePage = () => {
   };
 
   const handleFileUpload = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const newWorkBox = {
-        id: new Date().toISOString(),
-        name: file.name,
-        email: "",
-        phone: "",
-        created_at: new Date().toISOString(),
-        career: [""],
-        education: [""],
-        skills: [""],
-        awards: [""],
-        introduction: "",
-        links: [""],
-        title: file.name,
-      };
-      setWorkBoxes((prev) => {
-        const updatedWorkBoxes = [...prev, newWorkBox];
-        localStorage.setItem("resumes", JSON.stringify(updatedWorkBoxes));
-        return updatedWorkBoxes;
-      });
-    };
-    reader.readAsText(file);
+    setSelectedFile(file);
+    setIsUploadModalOpen(true);
+  };
+
+  const confirmUpload = async () => {
+    if (!selectedFile) return;
+
+    const fileName = `${Date.now()}_${selectedFile.name}`;
+    const { data, error: uploadError } = await supabase.storage
+      .from("uploads")
+      .upload(`public/${fileName}`, selectedFile);
+
+    if (uploadError) {
+      console.error("Error uploading file:", uploadError);
+    } else {
+      const fileURL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/uploads/${fileName}`;
+      const { data: insertData, error: insertError } = await supabase
+        .from("file_uploads")
+        .insert([
+          {
+            fileURL,
+            file_name: selectedFile.name,
+            email: me.email,
+          },
+        ]);
+
+      if (insertError) {
+        console.error("Error saving file URL to database:", insertError);
+      } else {
+        setWorkBoxes((prevBoxes) => [
+          ...prevBoxes,
+          {
+            id: insertData[0].id,
+            title: selectedFile.name,
+            email: me.email,
+            fileURL,
+            created_at: insertData[0].created_at,
+          },
+        ]);
+        setIsUploadModalOpen(false);
+        setSelectedFile(null);
+      }
+    }
   };
 
   const handleEdit = (id: string) => {
@@ -115,25 +142,9 @@ const ResumePage = () => {
   };
 
   const handleDownload = (id: string) => {
-    setSelectedBoxId(id);
-    setIsDownloadModalOpen(true);
-  };
-
-  const confirmDownload = () => {
-    if (selectedBoxId) {
-      const workBox = workBoxes.find((box) => box.id === selectedBoxId);
-      if (workBox) {
-        const element = document.createElement("a");
-        const file = new Blob([JSON.stringify(workBox)], {
-          type: "application/json",
-        });
-        element.href = URL.createObjectURL(file);
-        element.download = `${workBox.title}.json`;
-        document.body.appendChild(element);
-        element.click();
-        setIsDownloadModalOpen(false);
-        setSelectedBoxId(null);
-      }
+    const workBox = workBoxes.find((box) => box.id === id);
+    if (workBox && workBox.fileURL) {
+      window.open(workBox.fileURL, "_blank");
     }
   };
 
@@ -151,7 +162,7 @@ const ResumePage = () => {
             onDelete={() => handleDelete(box.id)}
             onEdit={() => handleEdit(box.id)}
             onTitleClick={() => handleDownload(box.id)}
-            isFileUpload={false}
+            isFileUpload={!!box.fileURL}
           />
         ))}
       </div>
@@ -165,10 +176,10 @@ const ResumePage = () => {
         confirmButtonColor="bg-red-500"
       />
       <Modal
-        isOpen={isDownloadModalOpen}
-        onClose={() => setIsDownloadModalOpen(false)}
-        onConfirm={confirmDownload}
-        title="파일을 다운로드 하시겠습니까?"
+        isOpen={isUploadModalOpen}
+        onClose={() => setIsUploadModalOpen(false)}
+        onConfirm={confirmUpload}
+        title="파일을 업로드 하시겠습니까?"
         confirmText="확인"
         cancelText="취소"
         confirmButtonColor="bg-blue-500"
