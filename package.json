@@ -24,25 +24,19 @@
     "next": "14.2.4",
     "react": "^18.3.1",
     "react-dom": "^18",
-<<<<<<< HEAD
     "react-modal": "^3.16.1",
     "supabase": "^1.183.5",
-=======
     "react-intersection-observer": "^9.10.3",
     "uuid": "^10.0.0",
     "yup": "^1.4.0",
->>>>>>> 595d65f39db3daba41e383fa72e5c4cfcd573ba2
-    "uuid": "^10.0.0",
+
     "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18",
-<<<<<<< HEAD
-=======
     "autoprefixer": "^10.4.19",
->>>>>>> 595d65f39db3daba41e383fa72e5c4cfcd573ba2
     "@types/uuid": "^10.0.0",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
