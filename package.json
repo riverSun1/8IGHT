@@ -24,7 +24,7 @@
     "react": "^18.3.1",
     "react-dom": "^18",
     "yup": "^1.4.0",
-    "uuid": "^10.0.0", develop
+    "uuid": "^10.0.0", 
     "zustand": "^4.5.4"
   },
   "devDependencies": {
