@@ -29,7 +29,7 @@ const NewResumePage = () => {
     gender: "",
     address: "",
     phone: "",
-    personal_info: "",
+    personalInfo: "",
     career: [""],
     education: [""],
     skills: [""],
@@ -83,33 +83,43 @@ const NewResumePage = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const newResume = {
+    if (
+      !formData.title ||
+      !formData.email ||
+      !formData.birth_date ||
+      !formData.name ||
+      !formData.gender ||
+      !formData.address ||
+      !formData.phone
+    ) {
+      alert("모든 필수 항목을 입력하세요.");
+      return;
+    }
+
+    const resumeData = {
       ...formData,
-      id: uuidv4(),
-      isFileUpload: false,
+      id: formData.id || uuidv4(), // 새로운 uuid 생성 또는 기존 id 사용
     };
 
-    if (id) {
-      const { data, error } = await supabase
-        .from("resumes")
-        .update(newResume)
-        .eq("id", id);
+    try {
+      if (id) {
+        const { data, error } = await supabase
+          .from("resumes")
+          .update(resumeData)
+          .eq("id", id);
 
-      if (error) {
-        console.error("Error updating resume:", error);
+        if (error) throw error;
       } else {
-        router.push("/resume");
-      }
-    } else {
-      const { data, error } = await supabase
-        .from("resumes")
-        .insert([newResume]);
+        const { data, error } = await supabase
+          .from("resumes")
+          .insert([resumeData]);
 
-      if (error) {
-        console.error("Error inserting resume:", error);
-      } else {
-        router.push("/resume");
+        if (error) throw error;
       }
+
+      router.push("/resume");
+    } catch (error) {
+      console.error("Error submitting resume:", error);
     }
   };
 
@@ -213,8 +223,8 @@ const NewResumePage = () => {
 
         <Section label="간단 소개글">
           <textarea
-            name="personal_info"
-            value={formData.personal_info}
+            name="personalInfo"
+            value={formData.personalInfo}
             onChange={handleChange}
             className="w-full border border-gray-300 p-2 rounded"
             placeholder="본인의 업무 경험을 기반으로 핵심역량과 업무 스킬을 간단히 작성해주세요. 3-5줄로 요약하여 작성하는 것을 추천합니다!"

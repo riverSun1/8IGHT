@@ -12,9 +12,15 @@ interface WorkBoxType {
   id: string;
   title: string;
   email: string;
+  name: string;
   phone: string;
-  career: string;
-  isFileUpload: boolean;
+  created_at: string;
+  career: string[];
+  education: string[];
+  skills: string[];
+  awards: string[];
+  introduction: string;
+  links: string[];
 }
 
 const supabase = createClient();
@@ -55,7 +61,10 @@ const ResumePage = () => {
       if (error) {
         console.error("Error deleting resume:", error);
       } else {
-        setWorkBoxes(workBoxes.filter((box) => box.id !== selectedBoxId));
+        const newWorkBoxes = workBoxes.filter(
+          (box) => box.id !== selectedBoxId
+        );
+        setWorkBoxes(newWorkBoxes);
         setIsDeleteModalOpen(false);
         setSelectedBoxId(null);
       }
@@ -67,11 +76,17 @@ const ResumePage = () => {
     reader.onload = () => {
       const newWorkBox = {
         id: new Date().toISOString(),
-        title: file.name,
+        name: file.name,
         email: "",
         phone: "",
-        career: "",
-        isFileUpload: true,
+        created_at: new Date().toISOString(),
+        career: [""],
+        education: [""],
+        skills: [""],
+        awards: [""],
+        introduction: "",
+        links: [""],
+        title: file.name,
       };
       setWorkBoxes((prev) => {
         const updatedWorkBoxes = [...prev, newWorkBox];
@@ -96,9 +111,11 @@ const ResumePage = () => {
       const workBox = workBoxes.find((box) => box.id === selectedBoxId);
       if (workBox) {
         const element = document.createElement("a");
-        const file = new Blob([workBox.career], { type: "text/plain" });
+        const file = new Blob([JSON.stringify(workBox)], {
+          type: "application/json",
+        });
         element.href = URL.createObjectURL(file);
-        element.download = workBox.title;
+        element.download = `${workBox.title}.json`;
         document.body.appendChild(element);
         element.click();
         setIsDownloadModalOpen(false);
@@ -117,13 +134,11 @@ const ResumePage = () => {
             key={box.id}
             id={box.id}
             title={box.title}
-            date={new Date().toISOString().split("T")[0]}
+            date={box.created_at.split("T")[0]}
             onDelete={() => handleDelete(box.id)}
             onEdit={() => handleEdit(box.id)}
-            onTitleClick={
-              box.isFileUpload ? () => handleDownload(box.id) : undefined
-            }
-            isFileUpload={box.isFileUpload}
+            onTitleClick={() => handleDownload(box.id)}
+            isFileUpload={false}
           />
         ))}
       </div>

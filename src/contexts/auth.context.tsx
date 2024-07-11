@@ -29,7 +29,8 @@ const initialValue: AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue>(initialValue);
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => useContext(AuthContext); //todo: 가져와서 로그인한 사람만 페이지 접근 가능하도록 하자? 로그인 안한 상태에서 resume페이지 접속 시 로그인, 회원가입 페이지로 넘어가도록?
+// me가 로그인 한 사람
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [isInitailized, setIsInitailized] =
