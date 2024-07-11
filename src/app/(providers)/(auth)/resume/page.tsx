@@ -25,7 +25,7 @@ const ResumePage = () => {
   const router = useRouter();
   const [workBoxes, setWorkBoxes] = useState<WorkBoxType[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false); // 파일 업로드 모달 상태
+  const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
 
@@ -33,38 +33,38 @@ const ResumePage = () => {
     if (!isLoggedIn) {
       router.push("/log-in");
     } else {
-      const fetchResumes = async () => {
-        if (!me?.email) return;
-        const { data, error } = await supabase
-          .from("resumes")
-          .select("*")
-          .eq("email", me.email);
-
-        if (error) {
-          console.error("Error fetching resumes:", error);
-        } else {
-          setWorkBoxes(data);
-        }
-      };
-
-      const fetchFileUploads = async () => {
-        if (!me?.email) return;
-        const { data, error } = await supabase
-          .from("file_uploads")
-          .select("*")
-          .eq("email", me.email);
-
-        if (error) {
-          console.error("Error fetching file uploads:", error);
-        } else {
-          setWorkBoxes((prevBoxes) => [...prevBoxes, ...data]);
-        }
-      };
-
       fetchResumes();
       fetchFileUploads();
     }
   }, [isLoggedIn, me]);
+
+  const fetchResumes = async () => {
+    if (!me?.email) return;
+    const { data, error } = await supabase
+      .from("resumes")
+      .select("*")
+      .eq("email", me.email);
+
+    if (error) {
+      console.error("Error fetching resumes:", error);
+    } else {
+      setWorkBoxes(data);
+    }
+  };
+
+  const fetchFileUploads = async () => {
+    if (!me?.email) return;
+    const { data, error } = await supabase
+      .from("file_uploads")
+      .select("*")
+      .eq("email", me.email);
+
+    if (error) {
+      console.error("Error fetching file uploads:", error);
+    } else {
+      setWorkBoxes((prevBoxes) => [...prevBoxes, ...data]);
+    }
+  };
 
   const handleDelete = (id: string) => {
     setSelectedBoxId(id);
@@ -149,21 +149,27 @@ const ResumePage = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex flex-wrap gap-1.5">
-        <AddBtn />
-        <FileButton onFileUpload={handleFileUpload} />
+    <div className="p-6 container mx-auto max-w-[1400px]">
+      <h1 className="text-start text-2xl font-bold mb-5">이력서</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 p-2">
+        <div className="m-0.5">
+          <AddBtn />
+        </div>
+        <div className="m-0.5">
+          <FileButton onFileUpload={handleFileUpload} />
+        </div>
         {workBoxes.map((box) => (
-          <WorkBox
-            key={box.id}
-            id={box.id}
-            title={box.title}
-            date={box.created_at.split("T")[0]}
-            onDelete={() => handleDelete(box.id)}
-            onEdit={() => handleEdit(box.id)}
-            onTitleClick={() => handleDownload(box.id)}
-            isFileUpload={!!box.fileURL}
-          />
+          <div key={box.id} className="m-0.5">
+            <WorkBox
+              id={box.id}
+              title={box.title || box.file_name || ""}
+              date={box.created_at.split("T")[0]}
+              onDelete={() => handleDelete(box.id)}
+              onEdit={() => handleEdit(box.id)}
+              onTitleClick={() => handleDownload(box.id)}
+              isFileUpload={!!box.fileURL}
+            />
+          </div>
         ))}
       </div>
       <Modal
@@ -179,7 +185,7 @@ const ResumePage = () => {
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
         onConfirm={confirmUpload}
-        title="파일을 업로드 하시겠습니까?"
+        title="파일을 업로드하시겠습니까?"
         confirmText="확인"
         cancelText="취소"
         confirmButtonColor="bg-blue-500"

@@ -4,7 +4,6 @@ import React, { useRef, useState } from "react";
 import { useAuth } from "@/contexts/auth.context";
 import { v4 as uuidv4 } from "uuid";
 import Modal from "../../_components/Modal";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/supabase/client";
 
 const supabase = createClient();
@@ -14,7 +13,6 @@ const FileButton = ({ onFileUpload }: { onFileUpload: () => void }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const { me } = useAuth();
-  const router = useRouter();
 
   const handleClick = () => {
     fileInputRef.current?.click();
@@ -62,7 +60,7 @@ const FileButton = ({ onFileUpload }: { onFileUpload: () => void }) => {
   return (
     <div>
       <div
-        className="border border-gray-300 bg-white p-4 rounded flex flex-col items-center justify-center w-48 h-48 cursor-pointer"
+        className="border border-gray-300 bg-white p-4 rounded flex flex-col items-center justify-center w-60 h-48 cursor-pointer"
         onClick={handleClick}
       >
         <input

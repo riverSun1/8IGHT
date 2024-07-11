@@ -20,7 +20,7 @@ const WorkBox = ({
   isFileUpload: boolean;
 }) => {
   return (
-    <div className="relative border border-gray-300 bg-white p-4 rounded w-48 h-48 flex flex-col justify-between hover:shadow-lg hover:border-blue-500 transition duration-200">
+    <div className="relative border border-gray-300 bg-white p-4 rounded flex flex-col justify-between hover:shadow-lg hover:border-blue-500 transition duration-200 w-60 h-48">
       <div className="cursor-pointer" onClick={onTitleClick || onEdit}>
         <div className="text-lg font-semibold mb-2">{title}</div>
       </div>
