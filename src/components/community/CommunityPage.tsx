@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import SideBar from "./SideBar";
 import PostModal from "./PostModal";
 import PostList from "./PostList";
+import { createClient } from "@/supabase/client";
 
 const CommunityPage = () => {
   const [posts, setPosts] = useState<any[]>([]);
@@ -14,23 +14,20 @@ const CommunityPage = () => {
   const handlePostClose = () => setPostModalOpen(false);
 
   const addPost = (post: any) => {
-    setPosts([post, ...posts]);
+    setPosts((prevPosts) => [post, ...prevPosts]);
   };
 
   const fetchPosts = async () => {
-    try {
-      const response = await axios.get("/api/auth/post");
-      if (response.status === 200) {
-        setPosts(response.data);
-      } else {
-        console.error(
-          "Error fetching posts:",
-          response.status,
-          response.statusText
-        );
-      }
-    } catch (error) {
+    const supabase = createClient();
+    const { data, error } = await supabase
+      .from("community_post")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
       console.error("Error fetching posts:", error);
+    } else {
+      setPosts(data);
     }
   };
 

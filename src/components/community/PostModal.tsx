@@ -14,6 +14,7 @@ import * as yup from "yup";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import axios from "axios";
 import { useAuth } from "@/contexts/auth.context";
+import { createClient } from "@/supabase/client"; // Supabase client import
 
 interface FormValues {
   postContent: string;
@@ -39,6 +40,9 @@ const PostModal: React.FC<PostModalProps> = ({
     "/images/profile-placeholder.png"
   );
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+  const supabase = createClient();
 
   const formik = useFormik<FormValues>({
     initialValues: {
@@ -48,16 +52,48 @@ const PostModal: React.FC<PostModalProps> = ({
     onSubmit: async (values, { setSubmitting }: FormikHelpers<FormValues>) => {
       if (isLoggedIn) {
         try {
+          let imageUrl = null;
+
+          if (selectedFile) {
+            // 이미지 파일 크기 및 유형 검사
+            const fileSizeKB = selectedFile.size / 1024;
+            const fileType = selectedFile.type;
+            if (fileSizeKB > 700) {
+              alert("이미지 파일 크기는 700KB를 초과할 수 없습니다.");
+              setSubmitting(false);
+              return;
+            }
+            if (!["image/png", "image/jpeg"].includes(fileType)) {
+              alert("PNG 및 JPG/JPEG 이미지 파일만 업로드할 수 있습니다.");
+              setSubmitting(false);
+              return;
+            }
+
+            // Supabase 스토리지에 이미지 업로드
+            const { data, error } = await supabase.storage
+              .from("community-post-image")
+              .upload(`public/${selectedFile.name}`, selectedFile);
+
+            if (error) {
+              console.error("Error uploading image:", error);
+              setSubmitting(false);
+              return;
+            }
+
+            imageUrl = supabase.storage
+              .from("community-post-image")
+              .getPublicUrl(`public/${selectedFile.name}`).data.publicUrl;
+          }
+
           const response = await axios.post("/api/auth/post", {
             postContent: values.postContent,
             profileImage,
-            image: selectedImage,
+            image: imageUrl,
             user_id: me?.id,
           });
 
           if (response.status === 200) {
-            const postData = response.data[0] || response.data;
-            addPost(postData);
+            addPost(response.data[0]);
             handleClose();
             alert("게시글이 작성되었습니다!");
           } else {
@@ -76,6 +112,7 @@ const PostModal: React.FC<PostModalProps> = ({
   useEffect(() => {
     formik.resetForm();
     setSelectedImage(null);
+    setSelectedFile(null);
   }, [open]);
 
   const handleDescriptionChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -86,6 +123,7 @@ const PostModal: React.FC<PostModalProps> = ({
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
       setSelectedImage(URL.createObjectURL(event.target.files[0]));
+      setSelectedFile(event.target.files[0]);
     }
   };
 
