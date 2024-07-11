@@ -184,7 +184,7 @@ function PhoneInputSection({
           </div>
         )}
         {isSuccess && (
-          <p className="text-[13px] text-green-500">인증에 성공했습니다.</p>
+          <p className="text-[13px] text-blue-500">인증에 성공했습니다.</p>
         )}
       </div>
     </div>

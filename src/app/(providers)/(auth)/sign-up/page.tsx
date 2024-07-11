@@ -4,9 +4,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { useAuth } from "@/contexts/auth.context";
+import AuthButton from "../_components/Button";
 import ArrowLeftSvg from "../_components/icons/ArrowLeftSvg";
 import AuthInput from "../_components/Input";
 import PhoneInputSection from "../_components/PhoneInputSection";
+import SignUpTerms from "../_components/SignUpTerms";
 
 export type handleCheckType = (successBoolean: boolean) => void;
 
@@ -17,12 +19,19 @@ function SignUpPage() {
   const [password, setPassword] = useState<string>("");
   const [isPhoneCheckSuccess, setIsPhoneCheckSuccess] =
     useState<boolean>(false);
+  const [isChecked, setIsChecked] = useState<boolean>(false);
+
+  const isAllOkay =
+    email && password && isPhoneCheckSuccess && isChecked ? true : false;
 
   const handleCheck: handleCheckType = (successBoolean) => {
     setIsPhoneCheckSuccess(successBoolean);
   };
 
   const handleClickSignUp = async () => {
+    if (!isAllOkay) {
+      return;
+    }
     signUp(email, password);
   };
 
@@ -35,7 +44,7 @@ function SignUpPage() {
         <ArrowLeftSvg color="#979798" width={20} height={20} />
         <p className="text-[18px] text-neutral-500">취소하고 돌아가기</p>
       </button>
-      <h1 className="font-bold text-[28px] text-center text-neutral-950">
+      <h1 className="mb-12 font-bold text-[28px] text-center text-neutral-950">
         회원가입
       </h1>
       <div className="flex flex-col gap-[30px]">
@@ -63,9 +72,14 @@ function SignUpPage() {
             이하로 입력해주세요.
           </p>
         </div>
-        <button className="mt-3 button" onClick={handleClickSignUp}>
+        <SignUpTerms
+          getCheckedConditionFunc={(boolean) => {
+            setIsChecked(boolean);
+          }}
+        />
+        <AuthButton onClick={handleClickSignUp} isAllOk={isAllOkay}>
           가입하기
-        </button>
+        </AuthButton>
       </div>
     </>
   );
