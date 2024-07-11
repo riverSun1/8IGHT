@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
 import { useAuth } from "@/contexts/auth.context";
 import AuthButton from "../_components/Button";
 import ArrowLeftSvg from "../_components/icons/ArrowLeftSvg";

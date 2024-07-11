@@ -11,7 +11,7 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
       try {
         const response = await axios.get(`/api/detail-page/${params.id}`);
         const data: jobDetailType = response.data;
-        console.log(data);
+        console.log("데이터", data);
         return data;
       } catch (error) {
         console.log("error", error);
@@ -36,7 +36,7 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
               href={data?.result.srcUrl}
               className="font-semibold text-lg underline underline-offset-2 text-slate-800"
             >
-              {data?.result.instNm}
+              {data?.result?.instNm}
             </a>
             <span className="font-semibold">∙</span>
             <p className="text-sm">{data?.result.workRgnNmLst}</p>
@@ -44,7 +44,7 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
             <p className="text-sm">{data?.result.recrutSeNm}</p>
           </div>
           <h1 className="font-bold text-2xl py-3">
-            {data?.result.recrutPbancTtl}
+            {data?.result?.recrutPbancTtl}
           </h1>
         </div>
         <div className="py-2 flex flex-col gap-2 border-b-[1px]">
@@ -58,7 +58,7 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
             </p>
           </div>
           <h2 className="font-semibold text-base">부서</h2>
-          <div className="flex justify-start items-center gap-3 pb-2">
+          <div className="flex justify-start items-center flex-wrap gap-3 pb-2">
             {uniqueArray?.map((step, index) => (
               <p
                 key={index}
@@ -80,7 +80,7 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
         <div className="flex flex-col gap-2 pb-4">
           <h2 className="font-semibold text-lg">자격 요건</h2>
           <div className="flex gap-2">
-            {data?.result.acbgCondNmLst.split(",").map((education, index) => (
+            {data?.result?.acbgCondNmLst.split(",").map((education, index) => (
               <div key={index} className=" border p-1 rounded">
                 <p className="text-sm">{education}</p>
               </div>
@@ -95,9 +95,9 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
         <div className="flex flex-col gap-2 py-4">
           <h2 className="font-semibold text-lg">결격 사유</h2>
           <div className="flex flex-col gap-2">
-            {data?.result.disqlfcRsn.split("○").map((data, index) => (
+            {data?.result.disqlfcRsn.split("○").map((recruit, index) => (
               <div key={index}>
-                <p>{data}</p>
+                <p>{recruit}</p>
               </div>
             ))}
           </div>

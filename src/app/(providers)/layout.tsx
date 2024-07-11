@@ -4,7 +4,7 @@ import { PropsWithChildren } from "react";
 
 import { AuthProvider } from "@/contexts/auth.context";
 
-function RootLayout({ children }: PropsWithChildren) {
+function ProvidersLayout({ children }: PropsWithChildren) {
   return (
     <TanstackQueryProvider>
       <AuthProvider>{children}</AuthProvider>
@@ -13,4 +13,4 @@ function RootLayout({ children }: PropsWithChildren) {
   );
 }
 
-export default RootLayout;
+export default ProvidersLayout;
