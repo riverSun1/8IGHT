@@ -6,16 +6,18 @@ import AddBtn from "../_components/AddBtn";
 import FileButton from "../_components/FileButton";
 import WorkBox from "../_components/WorkBox";
 import Modal from "../../_components/Modal";
+import { createClient } from "@/supabase/client";
 
 interface WorkBoxType {
   id: string;
-  name: string;
+  title: string;
   email: string;
   phone: string;
-  experience: string;
+  career: string;
   isFileUpload: boolean;
-  title: string;
 }
+
+const supabase = createClient();
 
 const ResumePage = () => {
   const router = useRouter();
@@ -25,8 +27,17 @@ const ResumePage = () => {
   const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
 
   useEffect(() => {
-    const storedWorkBoxes = JSON.parse(localStorage.getItem("resumes") || "[]");
-    setWorkBoxes(storedWorkBoxes);
+    const fetchResumes = async () => {
+      const { data, error } = await supabase.from("resumes").select("*");
+
+      if (error) {
+        console.error("Error fetching resumes:", error);
+      } else {
+        setWorkBoxes(data);
+      }
+    };
+
+    fetchResumes();
   }, []);
 
   const handleDelete = (id: string) => {
@@ -34,13 +45,20 @@ const ResumePage = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (selectedBoxId) {
-      const newWorkBoxes = workBoxes.filter((box) => box.id !== selectedBoxId);
-      setWorkBoxes(newWorkBoxes);
-      localStorage.setItem("resumes", JSON.stringify(newWorkBoxes));
-      setIsDeleteModalOpen(false);
-      setSelectedBoxId(null);
+      const { error } = await supabase
+        .from("resumes")
+        .delete()
+        .eq("id", selectedBoxId);
+
+      if (error) {
+        console.error("Error deleting resume:", error);
+      } else {
+        setWorkBoxes(workBoxes.filter((box) => box.id !== selectedBoxId));
+        setIsDeleteModalOpen(false);
+        setSelectedBoxId(null);
+      }
     }
   };
 
@@ -49,12 +67,11 @@ const ResumePage = () => {
     reader.onload = () => {
       const newWorkBox = {
         id: new Date().toISOString(),
-        name: file.name,
+        title: file.name,
         email: "",
         phone: "",
-        experience: "",
+        career: "",
         isFileUpload: true,
-        title: file.name,
       };
       setWorkBoxes((prev) => {
         const updatedWorkBoxes = [...prev, newWorkBox];
@@ -79,9 +96,9 @@ const ResumePage = () => {
       const workBox = workBoxes.find((box) => box.id === selectedBoxId);
       if (workBox) {
         const element = document.createElement("a");
-        const file = new Blob([workBox.experience], { type: "text/plain" });
+        const file = new Blob([workBox.career], { type: "text/plain" });
         element.href = URL.createObjectURL(file);
-        element.download = workBox.name;
+        element.download = workBox.title;
         document.body.appendChild(element);
         element.click();
         setIsDownloadModalOpen(false);

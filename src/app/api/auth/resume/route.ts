@@ -1,38 +1,38 @@
+import { NextResponse } from "next/server";
 import { createClient } from "@/supabase/server";
-import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest) {
-  const data = await request.json();
-  const {
-    user_id,
-    title,
-    personalInfo,
-    career,
-    education,
-    skills,
-    awards,
-    introduction,
-    links,
-  } = data;
+const supabase = createClient();
 
-  const supabase = createClient();
-  const { data: resume, error } = await supabase.from("resumes").insert([
-    {
-      user_id,
-      title,
-      personal_info: personalInfo,
-      career,
-      education,
-      skills,
-      awards,
-      introduction,
-      links,
-    },
-  ]);
+export async function POST(req: Request) {
+  try {
+    const formData = await req.json();
+    const { data, error } = await supabase.from("resumes").insert([formData]);
 
-  if (error) {
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    return NextResponse.json({ data }, { status: 200 });
+  } catch (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+}
 
-  return NextResponse.json(resume);
+export async function PUT(req: Request) {
+  try {
+    const formData = await req.json();
+    const { id, ...updateData } = formData;
+    const { data, error } = await supabase
+      .from("resumes")
+      .update(updateData)
+      .eq("id", id);
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+
+    return NextResponse.json({ data }, { status: 200 });
+  } catch (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }

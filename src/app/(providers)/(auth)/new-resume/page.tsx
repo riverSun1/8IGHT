@@ -2,6 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { createClient } from "@/supabase/client";
+import { v4 as uuidv4 } from "uuid";
+
+const supabase = createClient();
 
 const Section = ({ label, children }) => (
   <div className="bg-gray-100 p-4 rounded-lg shadow-sm mb-4">
@@ -20,12 +24,12 @@ const NewResumePage = () => {
     id: "",
     title: "",
     email: "",
-    birthDate: "",
+    birth_date: "",
     name: "",
     gender: "",
     address: "",
     phone: "",
-    personalInfo: "",
+    personal_info: "",
     career: [""],
     education: [""],
     skills: [""],
@@ -36,11 +40,20 @@ const NewResumePage = () => {
 
   useEffect(() => {
     if (id) {
-      const storedResumes = JSON.parse(localStorage.getItem("resumes") || "[]");
-      const resume = storedResumes.find((r) => r.id === id);
-      if (resume) {
-        setFormData(resume);
-      }
+      const fetchResume = async () => {
+        const { data, error } = await supabase
+          .from("resumes")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+        if (error) {
+          console.error("Error fetching resume:", error);
+        } else {
+          setFormData(data);
+        }
+      };
+      fetchResume();
     }
   }, [id]);
 
@@ -67,28 +80,37 @@ const NewResumePage = () => {
     setFormData({ ...formData, [field]: [...formData[field], ""] });
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const storedResumes = JSON.parse(localStorage.getItem("resumes") || "[]");
+
     const newResume = {
       ...formData,
-      id: id || new Date().toISOString(),
+      id: uuidv4(),
       isFileUpload: false,
     };
 
     if (id) {
-      const updatedResumes = storedResumes.map((resume) =>
-        resume.id === id ? newResume : resume
-      );
-      localStorage.setItem("resumes", JSON.stringify(updatedResumes));
-    } else {
-      localStorage.setItem(
-        "resumes",
-        JSON.stringify([...storedResumes, newResume])
-      );
-    }
+      const { data, error } = await supabase
+        .from("resumes")
+        .update(newResume)
+        .eq("id", id);
 
-    router.push("/resume");
+      if (error) {
+        console.error("Error updating resume:", error);
+      } else {
+        router.push("/resume");
+      }
+    } else {
+      const { data, error } = await supabase
+        .from("resumes")
+        .insert([newResume]);
+
+      if (error) {
+        console.error("Error inserting resume:", error);
+      } else {
+        router.push("/resume");
+      }
+    }
   };
 
   return (
@@ -127,8 +149,8 @@ const NewResumePage = () => {
               <label className="block text-gray-700 mb-1">생년월일</label>
               <input
                 type="date"
-                name="birthDate"
-                value={formData.birthDate}
+                name="birth_date"
+                value={formData.birth_date}
                 onChange={handleChange}
                 className="w-full border border-gray-300 p-2 rounded mb-2"
                 required
@@ -191,8 +213,8 @@ const NewResumePage = () => {
 
         <Section label="간단 소개글">
           <textarea
-            name="personalInfo"
-            value={formData.personalInfo}
+            name="personal_info"
+            value={formData.personal_info}
             onChange={handleChange}
             className="w-full border border-gray-300 p-2 rounded"
             placeholder="본인의 업무 경험을 기반으로 핵심역량과 업무 스킬을 간단히 작성해주세요. 3-5줄로 요약하여 작성하는 것을 추천합니다!"
