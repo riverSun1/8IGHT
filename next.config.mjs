@@ -7,6 +7,13 @@ const nextConfig = {
       "via.placeholder.com",
       "www.wanted.co.kr",
     ],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**",
+        port: "",
+      },
+    ],
   },
 };
 
