@@ -20,10 +20,12 @@ function AuthButton({
 
   return (
     <button
-      onClick={() => onClick}
+      onClick={() => onClick()}
       disabled={disabled}
       className={`${
-        disabled ? "bg-[#f4f4fe] text-[#d9d9d9]" : "bg-blue-600 text-white"
+        disabled
+          ? "bg-[#f4f4fe] text-[#d9d9d9]"
+          : "bg-blue-600 text-white hover:brightness-95 active:brightness-75"
       } w-full h-[50px] rounded-[10px]`}
     >
       {children}

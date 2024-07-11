@@ -86,7 +86,7 @@ function AuthInput({
 
   useEffect(() => {
     if (getIsError) {
-      getIsError(!isError);
+      getIsError(isError);
     }
   }, [isError]);
 

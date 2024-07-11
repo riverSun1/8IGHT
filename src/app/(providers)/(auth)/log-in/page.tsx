@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { useAuth } from "@/contexts/auth.context";
@@ -9,24 +10,31 @@ import AuthInput from "../_components/Input";
 
 function LoginPage() {
   const { logIn } = useAuth();
+  const logInRouter = useRouter();
   const [email, setEmail] = useState<string>("");
-  const [emialError, setEmailError] = useState<boolean>(true);
+  const [emailError, setEmailError] = useState<boolean>(true);
   const [password, setPassword] = useState<string>("");
   const [passwordError, setPasswordError] = useState<boolean>(true);
 
-  const isAllOkay = !emialError && !passwordError ? true : false;
+  const isAllOkay =
+    !emailError && !passwordError && email !== "" && password !== ""
+      ? true
+      : false;
 
   const handleClickLogIn = async () => {
     if (!isAllOkay) {
       return;
     }
-    logIn(email, password);
+    const response = await logIn(email, password);
+    if (response.status) {
+      return logInRouter.replace("/");
+    }
   };
 
   return (
     <>
       <h1 className="mb-12 font-bold text-[28px] text-center text-neutral-950">
-        이메일 로그인
+        이메일로 로그인
       </h1>
       <div className="flex flex-col gap-[30px]">
         <AuthInput
@@ -55,33 +63,13 @@ function LoginPage() {
           </p>
         </div>
         <Link
-          className="text-[18px] font-medium h-[48px] bg-white flex items-center justify-center w-full text-blue-600 rounded-[10px] border border-neutral-300"
+          className="text-[18px] font-medium h-[50px] bg-white flex items-center justify-center w-full text-blue-600 rounded-[10px] border border-neutral-300"
           href="/sign-up"
         >
           이메일로 회원가입
         </Link>
       </div>
-      <div></div>
     </>
-    // <div className="max-w-96 flex flex-col">
-    //   <input
-    //     className="input"
-    //     type="text"
-    //     placeholder="email"
-    //     value={email}
-    //     onChange={(e) => setEmail(e.target.value)}
-    //   />
-    //   <input
-    //     className="input"
-    //     type="text"
-    //     placeholder="password"
-    //     value={password}
-    //     onChange={(e) => setPassword(e.target.value)}
-    //   />
-    //   <button className="mt-3 button" onClick={handleClickLogIn}>
-    //     로그인하기
-    //   </button>
-    // </div>
   );
 }
 

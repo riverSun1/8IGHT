@@ -13,18 +13,18 @@ type AuthContextValue = {
   isInitailized: boolean;
   isLoggedIn: boolean;
   me: User | null;
-  logIn: (email: string, password: string) => void;
+  logIn: (email: string, password: string) => Promise<{ status: number }>;
   logOut: () => void;
-  signUp: (email: string, password: string) => void;
+  signUp: (email: string, password: string) => Promise<{ status: number }>;
 };
 
 const initialValue: AuthContextValue = {
   isInitailized: false,
   isLoggedIn: false,
   me: null,
-  logIn: () => {},
+  logIn: async () => ({ status: 0 }),
   logOut: () => {},
-  signUp: () => {},
+  signUp: async () => ({ status: 0 }),
 };
 
 const AuthContext = createContext<AuthContextValue>(initialValue);
@@ -39,7 +39,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
   // 로그인 함수
   const logIn: AuthContextValue["logIn"] = async (email, password) => {
-    if (!email || !password) return alert("이메일, 비밀번호 모두 채워 주세요!");
+    if (!email || !password) {
+      alert("이메일, 비밀번호 모두 채워 주세요!");
+      return { status: 401 }; // 상태 코드 추가;
+    }
     const data = {
       email,
       password,
@@ -50,12 +53,23 @@ export function AuthProvider({ children }: PropsWithChildren) {
     });
     const user = await response.json();
     setMe(user);
+
+    if (response.status === 401) {
+      return { status: 401 };
+    }
+    return { status: 200 };
   };
 
   // 가입 함수
   const signUp: AuthContextValue["signUp"] = async (email, password) => {
-    if (!email || !password) return alert("이메일, 비밀번호 모두 채워 주세요!");
-    if (me) return alert("이미 로그인이 되어있어요");
+    if (!email || !password) {
+      alert("이메일, 비밀번호 모두 채워 주세요!");
+      return { status: 401 }; // 상태 코드 추가
+    }
+    if (me) {
+      alert("이미 로그인이 되어있어요");
+      return { status: 400 }; // 상태 코드 추가
+    }
     const data = {
       email,
       password,
@@ -66,6 +80,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
     });
     const user = await response.json();
     setMe(user);
+
+    if (response.status === 401) {
+      return { status: 401 };
+    }
+    return { status: 200 };
   };
 
   // 로그아웃 함수

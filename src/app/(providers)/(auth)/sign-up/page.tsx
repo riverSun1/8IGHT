@@ -14,7 +14,7 @@ export type handleCheckType = (successBoolean: boolean) => void;
 
 function SignUpPage() {
   const { signUp } = useAuth();
-  const router = useRouter();
+  const signUpRouter = useRouter();
   const [email, setEmail] = useState<string>("");
   const [emialError, setEmailError] = useState<boolean>(true);
   const [password, setPassword] = useState<string>("");
@@ -26,7 +26,9 @@ function SignUpPage() {
 
   const isAllOkay =
     !emialError &&
+    email !== "" &&
     !passwordError &&
+    password !== "" &&
     !passwordCheckError &&
     isPhoneCheckSuccess &&
     isChecked
@@ -41,14 +43,17 @@ function SignUpPage() {
     if (!isAllOkay) {
       return;
     }
-    signUp(email, password);
+    const response = await signUp(email, password);
+    if (response.status) {
+      return signUpRouter.replace("/");
+    }
   };
 
   return (
     <>
       <button
-        className="absolute top-0 left-8 flex gap-2 items-center"
-        onClick={() => router.back()}
+        className="absolute top-6 left-8 flex gap-2 items-center"
+        onClick={() => signUpRouter.back()}
       >
         <ArrowLeftSvg color="#979798" width={20} height={20} />
         <p className="text-[18px] text-neutral-500">취소하고 돌아가기</p>
