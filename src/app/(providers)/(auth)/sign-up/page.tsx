@@ -16,13 +16,22 @@ function SignUpPage() {
   const { signUp } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState<string>("");
+  const [emialError, setEmailError] = useState<boolean>(true);
   const [password, setPassword] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<boolean>(true);
+  const [passwordCheckError, setPassworCheckError] = useState<boolean>(true);
   const [isPhoneCheckSuccess, setIsPhoneCheckSuccess] =
     useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(false);
 
   const isAllOkay =
-    email && password && isPhoneCheckSuccess && isChecked ? true : false;
+    !emialError &&
+    !passwordError &&
+    !passwordCheckError &&
+    isPhoneCheckSuccess &&
+    isChecked
+      ? true
+      : false;
 
   const handleCheck: handleCheckType = (successBoolean) => {
     setIsPhoneCheckSuccess(successBoolean);
@@ -53,6 +62,7 @@ function SignUpPage() {
           isEmail
           labelText="이메일"
           setInput={setEmail}
+          getIsError={setEmailError}
         />
         <PhoneInputSection handleSuccess={handleCheck} />
         <div className="flex flex-col gap-[8px]">
@@ -61,11 +71,13 @@ function SignUpPage() {
             isPassword
             labelText="비밀번호"
             setInput={setPassword}
+            getIsError={setPasswordError}
           />
           <AuthInput
             placeholder="비밀번호를 다시 한번 입력해주세요."
             isPasswordCheck
             passwordNum={password}
+            getIsError={setPassworCheckError}
           />
           <p className="text-neutral-400 text-[14px] font-[400]">
             영문 대소문자, 숫자, 특수문자를 3가지 이상으로 조합해 8자 이상 16자

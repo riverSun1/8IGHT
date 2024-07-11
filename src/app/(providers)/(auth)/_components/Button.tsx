@@ -24,7 +24,7 @@ function AuthButton({
       disabled={disabled}
       className={`${
         disabled ? "bg-[#f4f4fe] text-[#d9d9d9]" : "bg-blue-600 text-white"
-      } h-[50px] rounded-[10px]`}
+      } w-full h-[50px] rounded-[10px]`}
     >
       {children}
     </button>
