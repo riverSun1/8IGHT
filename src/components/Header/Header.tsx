@@ -10,10 +10,10 @@ const Header = () => {
           <Image src={logo} alt="logo" width={150} height={90} />
         </Link>
         <div className="flex flex-row gap-3 ml-auto">
-          <div className="border-2 p-2 border-gray-300 rounded-md text-blue-500 font-bold">
+          <div className="border p-2 border-gray-300 rounded-md text-blue-500 font-bold hover:bg-gray-100 transition-colors duration-300">
             <Link href="/sign-up">회원가입</Link>
           </div>
-          <div className="border-2 p-2 border-gray-300 rounded-md text-blue-500 font-bold">
+          <div className="border p-2 border-gray-300 rounded-md text-blue-500 font-bold hover:bg-gray-100 transition-colors duration-300">
             <Link href="/log-in">로그인</Link>
           </div>
         </div>

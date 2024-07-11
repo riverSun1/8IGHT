@@ -68,7 +68,7 @@ const Carousel = () => {
               width={1100}
               height={300}
               objectFit="cover"
-              className="object-cover rounded-md max-w-[1200px] max-h-[260px]"
+              className="object-cover rounded-md max-w-[1200px] max-h-[210px]"
             />
           </div>
         ))}
