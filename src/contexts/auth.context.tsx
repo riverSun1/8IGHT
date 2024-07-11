@@ -64,6 +64,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       method: "POST",
       body: JSON.stringify(data),
     });
+    console.log("response", response);
     const user = await response.json();
     setMe(user);
   };
