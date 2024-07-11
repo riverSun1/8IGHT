@@ -55,7 +55,7 @@ const CommunityPage: React.FC = () => {
           </main>
         </div>
       </div>
-      <PostModal open={postModalOpen} handleClose={handlePostClose} addPost={addPost} />
+      <PostModal open={postModalOpen} handleClose={handlePostClose} addPost={addPost} refreshPosts={fetchPosts} />
     </div>
   );
 };

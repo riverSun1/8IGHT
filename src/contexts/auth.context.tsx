@@ -8,20 +8,23 @@ import {
   useEffect,
   useState,
 } from "react";
+import { createClient } from "@/supabase/client";
 
 type AuthContextValue = {
-  isInitailized: boolean;
+  isInitialized: boolean;
   isLoggedIn: boolean;
   me: User | null;
+  userData: { nickname: string | null; imageUrl: string | null } | null;
   logIn: (email: string, password: string) => void;
   logOut: () => void;
   signUp: (email: string, password: string) => void;
 };
 
 const initialValue: AuthContextValue = {
-  isInitailized: false,
+  isInitialized: false,
   isLoggedIn: false,
   me: null,
+  userData: null,
   logIn: () => {},
   logOut: () => {},
   signUp: () => {},
@@ -32,10 +35,26 @@ const AuthContext = createContext<AuthContextValue>(initialValue);
 export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }: PropsWithChildren) {
-  const [isInitailized, setIsInitailized] =
-    useState<AuthContextValue["isInitailized"]>(false);
+  const [isInitialized, setIsInitialized] =
+    useState<AuthContextValue["isInitialized"]>(false);
   const [me, setMe] = useState<AuthContextValue["me"]>(null);
+  const [userData, setUserData] = useState<AuthContextValue["userData"]>(null);
   const isLoggedIn = !!me;
+  const supabase = createClient();
+
+  const fetchUserData = async (userId: string) => {
+    const { data, error } = await supabase
+      .from("users")
+      .select("nickname, imageUrl")
+      .eq("id", userId)
+      .single();
+    if (data) {
+      setUserData(data);
+    }
+    if (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   // 로그인 함수
   const logIn: AuthContextValue["logIn"] = async (email, password) => {
@@ -50,6 +69,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     });
     const user = await response.json();
     setMe(user);
+    fetchUserData(user.id);
   };
 
   // 가입 함수
@@ -67,6 +87,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     console.log("response", response);
     const user = await response.json();
     setMe(user);
+    fetchUserData(user.id);
   };
 
   // 로그아웃 함수
@@ -76,15 +97,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       method: "DELETE",
     });
     setMe(null);
-  };
-
-  const value = {
-    isInitailized,
-    isLoggedIn,
-    me,
-    logIn,
-    logOut,
-    signUp,
+    setUserData(null);
   };
 
   useEffect(() => {
@@ -92,12 +105,23 @@ export function AuthProvider({ children }: PropsWithChildren) {
       if (response.status === 200) {
         const user = await response.json();
         setMe(user);
+        fetchUserData(user.id);
       }
+      setIsInitialized(true);
     });
-    setIsInitailized(true);
   }, []);
 
-  if (!isInitailized) return null;
+  const value = {
+    isInitialized,
+    isLoggedIn,
+    me,
+    userData,
+    logIn,
+    logOut,
+    signUp,
+  };
+
+  if (!isInitialized) return null;
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
