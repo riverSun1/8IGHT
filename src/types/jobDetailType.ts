@@ -1,5 +1,3 @@
-import exp from "constants";
-
 export interface jobDetailType {
   resultCode: number;
   result: {

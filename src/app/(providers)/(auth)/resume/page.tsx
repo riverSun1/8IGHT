@@ -7,6 +7,7 @@ import FileButton from "../_components/FileButton";
 import WorkBox from "../_components/WorkBox";
 import Modal from "../../_components/Modal";
 import { createClient } from "@/supabase/client";
+import { useAuth } from "@/contexts/auth.context"; // auth.context import
 
 interface WorkBoxType {
   id: string;
@@ -27,24 +28,32 @@ const supabase = createClient();
 
 const ResumePage = () => {
   const router = useRouter();
+  const { isLoggedIn, me } = useAuth(); // auth context에서 로그인 상태와 사용자 정보 가져오기
   const [workBoxes, setWorkBoxes] = useState<WorkBoxType[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isDownloadModalOpen, setIsDownloadModalOpen] = useState(false);
   const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchResumes = async () => {
-      const { data, error } = await supabase.from("resumes").select("*");
+    if (!isLoggedIn) {
+      router.push("/log-in"); // 로그인하지 않은 경우 로그인 페이지로 이동
+    } else {
+      const fetchResumes = async () => {
+        const { data, error } = await supabase
+          .from("resumes")
+          .select("*")
+          .eq("user_id", me?.id); // 로그인한 사용자 데이터만 가져오기
 
-      if (error) {
-        console.error("Error fetching resumes:", error);
-      } else {
-        setWorkBoxes(data);
-      }
-    };
+        if (error) {
+          console.error("Error fetching resumes:", error);
+        } else {
+          setWorkBoxes(data);
+        }
+      };
 
-    fetchResumes();
-  }, []);
+      fetchResumes();
+    }
+  }, [isLoggedIn, me, router]);
 
   const handleDelete = (id: string) => {
     setSelectedBoxId(id);
@@ -123,6 +132,9 @@ const ResumePage = () => {
       }
     }
   };
+
+  // isLoggedIn 상태를 확인하여 페이지 렌더링 여부 결정
+  if (!isLoggedIn) return null;
 
   return (
     <div className="p-6">

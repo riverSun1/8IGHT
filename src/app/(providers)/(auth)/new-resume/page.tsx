@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/supabase/client";
 import { v4 as uuidv4 } from "uuid";
+import { useAuth } from "@/contexts/auth.context";
 
 const supabase = createClient();
 
@@ -19,6 +20,7 @@ const NewResumePage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+  const { isLoggedIn, me } = useAuth(); // auth context에서 로그인 상태와 사용자 정보 가져오기
 
   const [formData, setFormData] = useState({
     id: "",
@@ -39,23 +41,27 @@ const NewResumePage = () => {
   });
 
   useEffect(() => {
-    if (id) {
-      const fetchResume = async () => {
-        const { data, error } = await supabase
-          .from("resumes")
-          .select("*")
-          .eq("id", id)
-          .single();
+    if (!isLoggedIn) {
+      router.push("/log-in"); // 로그인하지 않은 경우 로그인 페이지로 이동
+    } else {
+      if (id) {
+        const fetchResume = async () => {
+          const { data, error } = await supabase
+            .from("resumes")
+            .select("*")
+            .eq("id", id)
+            .single();
 
-        if (error) {
-          console.error("Error fetching resume:", error);
-        } else {
-          setFormData(data);
-        }
-      };
-      fetchResume();
+          if (error) {
+            console.error("Error fetching resume:", error);
+          } else {
+            setFormData(data);
+          }
+        };
+        fetchResume();
+      }
     }
-  }, [id]);
+  }, [id, isLoggedIn]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -122,6 +128,9 @@ const NewResumePage = () => {
       console.error("Error submitting resume:", error);
     }
   };
+
+  // isLoggedIn 상태를 확인하여 페이지 렌더링 여부 결정
+  if (!isLoggedIn) return null;
 
   return (
     <div className="max-w-screen-2xl mx-auto bg-white p-6 rounded-lg shadow-sm">
