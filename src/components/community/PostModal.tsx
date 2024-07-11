@@ -14,7 +14,7 @@ import * as yup from "yup";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import axios from "axios";
 import { useAuth } from "@/contexts/auth.context";
-import { createClient } from "@/supabase/client"; // Supabase client import
+import { createClient } from "@/supabase/client";
 
 interface FormValues {
   postContent: string;
@@ -30,11 +30,7 @@ interface PostModalProps {
   addPost: (post: any) => void; // post의 타입도 정의 가능하다면 추가해 주세요
 }
 
-const PostModal: React.FC<PostModalProps> = ({
-  open,
-  handleClose,
-  addPost,
-}) => {
+const PostModal: React.FC<PostModalProps> = ({ open, handleClose, addPost }) => {
   const { isLoggedIn, me } = useAuth();
   const [profileImage, setProfileImage] = useState<string>(
     "/images/profile-placeholder.png"
@@ -122,8 +118,9 @@ const PostModal: React.FC<PostModalProps> = ({
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      setSelectedImage(URL.createObjectURL(event.target.files[0]));
-      setSelectedFile(event.target.files[0]);
+      const file = event.target.files[0];
+      setSelectedImage(URL.createObjectURL(file));
+      setSelectedFile(file);
     }
   };
 

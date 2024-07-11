@@ -5,16 +5,17 @@ import SideBar from "./SideBar";
 import PostModal from "./PostModal";
 import PostList from "./PostList";
 import { createClient } from "@/supabase/client";
+import { Database } from "@/supabase/database.types";
 
-const CommunityPage = () => {
-  const [posts, setPosts] = useState<any[]>([]);
+const CommunityPage: React.FC = () => {
+  const [posts, setPosts] = useState<Database["public"]["Tables"]["community_post"]["Row"][]>([]);
   const [postModalOpen, setPostModalOpen] = useState(false);
 
   const handlePostOpen = () => setPostModalOpen(true);
   const handlePostClose = () => setPostModalOpen(false);
 
-  const addPost = (post: any) => {
-    setPosts((prevPosts) => [post, ...prevPosts]);
+  const addPost = (post: Database["public"]["Tables"]["community_post"]["Row"]) => {
+    setPosts([post, ...posts]);
   };
 
   const fetchPosts = async () => {
@@ -27,7 +28,8 @@ const CommunityPage = () => {
     if (error) {
       console.error("Error fetching posts:", error);
     } else {
-      setPosts(data);
+      console.log("Fetched posts:", data);
+      setPosts(data || []);
     }
   };
 
@@ -42,18 +44,9 @@ const CommunityPage = () => {
           <SideBar />
           <main className="w-3/4 p-4 bg-white h-screen overflow-auto border-l border-gray-300">
             <div className="mb-4 border-b border-gray-300 pb-4">
-              <div
-                className="flex items-center cursor-pointer bg-white p-4 rounded shadow"
-                onClick={handlePostOpen}
-              >
-                <img
-                  src="/images/profile-placeholder.png"
-                  alt="프로필"
-                  className="w-10 h-10 rounded-full mr-2"
-                />
-                <span className="text-gray-500">
-                  나누고 싶은 생각을 공유해 보세요!
-                </span>
+              <div className="flex items-center cursor-pointer bg-white p-4 rounded shadow" onClick={handlePostOpen}>
+                <img src="/images/profile-placeholder.png" alt="프로필" className="w-10 h-10 rounded-full mr-2" />
+                <span className="text-gray-500">나누고 싶은 생각을 공유해 보세요!</span>
               </div>
             </div>
             <div className="pt-4">
@@ -62,11 +55,7 @@ const CommunityPage = () => {
           </main>
         </div>
       </div>
-      <PostModal
-        open={postModalOpen}
-        handleClose={handlePostClose}
-        addPost={addPost}
-      />
+      <PostModal open={postModalOpen} handleClose={handlePostClose} addPost={addPost} />
     </div>
   );
 };
