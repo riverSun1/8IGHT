@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 const DetailPage = ({ params }: { params: { id: string } }) => {
-  const { data, isPending, error } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["detailDate"],
     queryFn: async () => {
       try {
@@ -18,11 +18,11 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
       }
     },
   });
-  if (isPending) {
+  if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  const uniqueArray = data?.result?.steps.filter(
+  const uniqueArray = data?.result.steps.filter(
     (item, index, self) =>
       index === self.findIndex((t) => t.sortNo === item.sortNo)
   );
@@ -33,15 +33,15 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
         <div className=" flex flex-col justify-start border-b-[1px] my-1">
           <div className="flex justify-start items-center gap-1">
             <a
-              href={data?.result?.srcUrl}
+              href={data?.result.srcUrl}
               className="font-semibold text-lg underline underline-offset-2 text-slate-800"
             >
               {data?.result?.instNm}
             </a>
             <span className="font-semibold">∙</span>
-            <p className="text-sm">{data?.result?.workRgnNmLst}</p>
+            <p className="text-sm">{data?.result.workRgnNmLst}</p>
             <span className="font-semibold">∙</span>
-            <p className="text-sm">{data?.result?.recrutSeNm}</p>
+            <p className="text-sm">{data?.result.recrutSeNm}</p>
           </div>
           <h1 className="font-bold text-2xl py-3">
             {data?.result?.recrutPbancTtl}
@@ -51,10 +51,10 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
           <h2 className="font-semibold text-base ">채용</h2>
           <div className="flex justify-start items-center gap-3 pb-2">
             <p className="border rounded-lg text-center p-2 text-xs">
-              {data?.result?.ncsCdNmLst}
+              {data?.result.ncsCdNmLst}
             </p>
             <p className="border rounded-lg text-center p-2 text-xs">
-              {data?.result?.hireTypeNmLst}
+              {data?.result.hireTypeNmLst}
             </p>
           </div>
           <h2 className="font-semibold text-base">부서</h2>
@@ -71,13 +71,11 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
         </div>
         <h1 className="font-semibold py-5 text-xl">포지션 상세</h1>
         <div className=" flex flex-col gap-2 pb-4">
-          {data?.result?.scrnprcdrMthdExpln
-            .split(/-|O/)
-            .map((detail, index) => (
-              <div key={index}>
-                <p>{detail}</p>
-              </div>
-            ))}
+          {data?.result.scrnprcdrMthdExpln.split(/-|O/).map((detail, index) => (
+            <div key={index}>
+              <p>{detail}</p>
+            </div>
+          ))}
         </div>
         <div className="flex flex-col gap-2 pb-4">
           <h2 className="font-semibold text-lg">자격 요건</h2>
@@ -88,7 +86,7 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
               </div>
             ))}
           </div>
-          {data?.result?.aplyQlfcCn.split(/-|○/).map((common, index) => (
+          {data?.result.aplyQlfcCn.split(/-|○/).map((common, index) => (
             <div key={index}>
               <p>{common}</p>
             </div>
@@ -97,7 +95,7 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
         <div className="flex flex-col gap-2 py-4">
           <h2 className="font-semibold text-lg">결격 사유</h2>
           <div className="flex flex-col gap-2">
-            {data?.result?.disqlfcRsn.split("○").map((recruit, index) => (
+            {data?.result.disqlfcRsn.split("○").map((recruit, index) => (
               <div key={index}>
                 <p>{recruit}</p>
               </div>
