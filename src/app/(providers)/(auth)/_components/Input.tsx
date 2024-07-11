@@ -27,6 +27,7 @@ type InputProps = {
   isPasswordCheck?: boolean;
   passwordNum?: string;
   setInput?: (value: string) => void;
+  getIsError?: (value: boolean) => void;
 };
 
 function AuthInput({
@@ -37,6 +38,7 @@ function AuthInput({
   isPasswordCheck = false,
   passwordNum = "",
   setInput,
+  getIsError,
 }: PropsWithChildren<InputProps>) {
   const [inputValue, setInputValue] = useState<string>("");
   const [isChecked, setIsChecked] = useState<boolean>(false);
@@ -81,6 +83,12 @@ function AuthInput({
       setButtonType("text");
     }
   };
+
+  useEffect(() => {
+    if (getIsError) {
+      getIsError(isError);
+    }
+  }, [isError]);
 
   return (
     <div className="flex flex-col gap-2 relative">
