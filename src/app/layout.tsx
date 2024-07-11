@@ -1,4 +1,3 @@
-import Header from "@/components/Header/Header";
 import { TanstackQueryProvider } from "@/query/queryClient";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import type { Metadata } from "next";
@@ -21,7 +20,6 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <TanstackQueryProvider>
-          <Header />
           {children}
           <ReactQueryDevtools initialIsOpen={false} />
         </TanstackQueryProvider>
