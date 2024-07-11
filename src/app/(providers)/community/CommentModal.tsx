@@ -1,37 +1,34 @@
 "use client";
 
-import React, { useState, ChangeEvent, useEffect } from "react";
-import { Modal, Box, TextField, Button, IconButton } from "@mui/material";
+import React, { useState, ChangeEvent } from "react";
+import { Modal, Box, TextField, Button } from "@mui/material";
 import { useFormik, FormikHelpers } from "formik";
 import * as yup from "yup";
-import PhotoCamera from "@mui/icons-material/PhotoCamera";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createClient } from "@/supabase/client";
 import { useAuth } from "@/contexts/auth.context";
 
 interface FormValues {
-  postContent: string;
+  commentContent: string;
 }
 
 const validationSchema = yup.object({
-  postContent: yup.string().required("내용을 입력해 주세요"),
+  commentContent: yup.string().required("내용을 입력해 주세요"),
 });
 
-interface PostModalProps {
+interface CommentModalProps {
   open: boolean;
   handleClose: () => void;
-  addPost: (post: any) => void; // post의 타입도 정의 가능하다면 추가해 주세요
-  refreshPosts: () => void; // 리스트를 새로고침하는 함수
+  postId: string;
 }
 
-const PostModal: React.FC<PostModalProps> = ({
+const CommentModal: React.FC<CommentModalProps> = ({
   open,
   handleClose,
-  addPost,
-  refreshPosts,
+  postId,
 }) => {
   const { isLoggedIn, me, userData } = useAuth();
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const queryClient = useQueryClient();
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
@@ -39,29 +36,12 @@ const PostModal: React.FC<PostModalProps> = ({
 
   const mutation = useMutation({
     mutationFn: async (values: FormValues) => {
-      let imageUrl = null;
-
-      if (selectedImage) {
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("community-post-image")
-          .upload(`public/${selectedImage.name}`, selectedImage);
-
-        if (uploadError) throw uploadError;
-
-        imageUrl = uploadData?.path
-          ? supabase.storage
-              .from("community-post-image")
-              .getPublicUrl(uploadData.path).data?.publicUrl
-          : null;
-      }
-
       const { data, error } = await supabase
-        .from("community_post")
+        .from("comments")
         .insert({
-          comment: values.postContent,
-          imageUrl,
+          content: values.commentContent,
+          post_id: postId,
           user_id: me?.id,
-          like: 0,
         })
         .single();
 
@@ -69,9 +49,9 @@ const PostModal: React.FC<PostModalProps> = ({
 
       return data;
     },
-    onSuccess: (data) => {
-      addPost(data);
+    onSuccess: () => {
       setSuccessModalOpen(true);
+      queryClient.invalidateQueries(["comments", postId]);
     },
     onError: (error: any) => {
       console.error("Error submitting the form", error);
@@ -79,7 +59,7 @@ const PostModal: React.FC<PostModalProps> = ({
   });
 
   const formik = useFormik<FormValues>({
-    initialValues: { postContent: "" },
+    initialValues: { commentContent: "" },
     validationSchema,
     onSubmit: (values, { setSubmitting }: FormikHelpers<FormValues>) => {
       mutation.mutate(values);
@@ -87,19 +67,8 @@ const PostModal: React.FC<PostModalProps> = ({
     },
   });
 
-  useEffect(() => {
-    formik.resetForm();
-    setSelectedImage(null);
-  }, [open]);
-
   const handleDescriptionChange = (event: ChangeEvent<HTMLInputElement>) => {
     formik.handleChange(event);
-  };
-
-  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setSelectedImage(event.target.files[0]);
-    }
   };
 
   const handleCancel = () => {
@@ -117,7 +86,6 @@ const PostModal: React.FC<PostModalProps> = ({
 
   const handleSuccessClose = () => {
     setSuccessModalOpen(false);
-    refreshPosts(); // 리스트 새로고침
     handleClose();
   };
 
@@ -136,11 +104,11 @@ const PostModal: React.FC<PostModalProps> = ({
               <Button
                 type="submit"
                 className={`py-1 px-4 rounded ${
-                  formik.values.postContent && isLoggedIn
+                  formik.values.commentContent && isLoggedIn
                     ? "text-blue-500"
                     : "text-gray-400"
                 }`}
-                disabled={!formik.values.postContent || !isLoggedIn}
+                disabled={!formik.values.commentContent || !isLoggedIn}
               >
                 게시
               </Button>
@@ -160,38 +128,14 @@ const PostModal: React.FC<PostModalProps> = ({
               )}
             </div>
             <div className="border border-gray-300 rounded-lg p-4 space-y-4">
-              <div className="flex items-center">
-                <input
-                  accept="image/*"
-                  style={{ display: "none" }}
-                  id="file-upload"
-                  type="file"
-                  onChange={handleImageChange}
-                />
-                <label htmlFor="file-upload">
-                  <IconButton component="span">
-                    <PhotoCamera />
-                  </IconButton>
-                  <span className="ml-2 text-gray-500">이미지 추가</span>
-                </label>
-              </div>
-              {selectedImage && (
-                <div className="flex justify-center mb-4">
-                  <img
-                    src={URL.createObjectURL(selectedImage)}
-                    alt="Selected"
-                    className="max-h-40 rounded-lg"
-                  />
-                </div>
-              )}
               <TextField
                 fullWidth
-                id="postContent"
-                name="postContent"
-                placeholder="나누고 싶은 생각을 공유해 보세요!"
+                id="commentContent"
+                name="commentContent"
+                placeholder="댓글을 작성해 보세요!"
                 multiline
                 rows={6}
-                value={formik.values.postContent}
+                value={formik.values.commentContent}
                 onChange={handleDescriptionChange}
                 InputProps={{ disableUnderline: true }}
               />
@@ -206,7 +150,7 @@ const PostModal: React.FC<PostModalProps> = ({
           style={{ minHeight: "200px", minWidth: "300px" }}
         >
           <div className="text-center">
-            <p className="text-lg mb-4">글 작성을 중단하시겠습니까?</p>
+            <p className="text-lg mb-4">댓글 작성을 중단하시겠습니까?</p>
             <Button onClick={confirmCancelClose} className="text-gray-500 mr-4">
               취소
             </Button>
@@ -223,7 +167,7 @@ const PostModal: React.FC<PostModalProps> = ({
           style={{ minHeight: "200px", minWidth: "300px" }}
         >
           <div className="text-center">
-            <p className="text-lg mb-4">글이 작성되었습니다!</p>
+            <p className="text-lg mb-4">댓글이 작성되었습니다!</p>
             <Button onClick={handleSuccessClose} className="text-blue-500">
               확인
             </Button>
@@ -234,4 +178,4 @@ const PostModal: React.FC<PostModalProps> = ({
   );
 };
 
-export default PostModal;
+export default CommentModal;

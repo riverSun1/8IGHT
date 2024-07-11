@@ -5,37 +5,33 @@ import SideBar from "./SideBar";
 import PostModal from "./PostModal";
 import PostList from "./PostList";
 import { createClient } from "@/supabase/client";
-import { Database } from "@/supabase/database.types";
+import { Database } from "@/supabase/types";
+import { useQuery } from "@tanstack/react-query";
 
 const CommunityPage: React.FC = () => {
-  const [posts, setPosts] = useState<Database["public"]["Tables"]["community_post"]["Row"][]>([]);
+  const supabase = createClient();
+  const { data: posts, isLoading, error, refetch } = useQuery({
+    queryKey: ["posts"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("community_post")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) {
+        console.error("Error fetching posts:", error);
+      }
+      return data || [];
+    },
+  });
+
   const [postModalOpen, setPostModalOpen] = useState(false);
 
   const handlePostOpen = () => setPostModalOpen(true);
   const handlePostClose = () => setPostModalOpen(false);
 
   const addPost = (post: Database["public"]["Tables"]["community_post"]["Row"]) => {
-    setPosts([post, ...posts]);
+    refetch();
   };
-
-  const fetchPosts = async () => {
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from("community_post")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching posts:", error);
-    } else {
-      console.log("Fetched posts:", data);
-      setPosts(data || []);
-    }
-  };
-
-  useEffect(() => {
-    fetchPosts();
-  }, []);
 
   return (
     <div className="min-h-screen bg-white">
@@ -50,12 +46,16 @@ const CommunityPage: React.FC = () => {
               </div>
             </div>
             <div className="pt-4">
-              <PostList posts={posts} />
+              {isLoading ? (
+                <p>Loading...</p>
+              ) : (
+                <PostList posts={posts} />
+              )}
             </div>
           </main>
         </div>
       </div>
-      <PostModal open={postModalOpen} handleClose={handlePostClose} addPost={addPost} refreshPosts={fetchPosts} />
+      <PostModal open={postModalOpen} handleClose={handlePostClose} addPost={addPost} refreshPosts={refetch} />
     </div>
   );
 };
