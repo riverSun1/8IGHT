@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const AddBtn = () => {
   const router = useRouter();
@@ -11,7 +12,13 @@ const AddBtn = () => {
       className="border border-gray-300 bg-white p-4 rounded flex flex-col items-center justify-center w-60 h-48 cursor-pointer"
       onClick={() => router.push("/new-resume")}
     >
-      <div className="text-gray-500 text-4xl mb-2">📝</div>
+      <Image
+        src="/new-resume.png"
+        alt="new resume"
+        width={48}
+        height={48}
+        className="mb-6"
+      />
       <div className="text-lg font-semibold">새 이력서 작성</div>
     </div>
   );

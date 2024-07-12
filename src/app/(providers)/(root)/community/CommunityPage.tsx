@@ -1,16 +1,22 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import SideBar from "./SideBar";
-import PostModal from "./PostModal";
-import PostList from "./PostList";
+import React, { useState } from "react";
+
 import { createClient } from "@/supabase/client";
 import { Database } from "@/supabase/types";
 import { useQuery } from "@tanstack/react-query";
+import PostList from "./PostList";
+import PostModal from "./PostModal";
+import SideBar from "./SideBar";
 
 const CommunityPage: React.FC = () => {
   const supabase = createClient();
-  const { data: posts, isLoading, error, refetch } = useQuery({
+  const {
+    data: posts,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
     queryKey: ["posts"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -29,7 +35,9 @@ const CommunityPage: React.FC = () => {
   const handlePostOpen = () => setPostModalOpen(true);
   const handlePostClose = () => setPostModalOpen(false);
 
-  const addPost = (post: Database["public"]["Tables"]["community_post"]["Row"]) => {
+  const addPost = (
+    post: Database["public"]["Tables"]["community_post"]["Row"]
+  ) => {
     refetch();
   };
 

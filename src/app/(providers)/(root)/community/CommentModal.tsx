@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, ChangeEvent } from "react";
-import { Modal, Box, TextField, Button } from "@mui/material";
-import { useFormik, FormikHelpers } from "formik";
-import * as yup from "yup";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createClient } from "@/supabase/client";
 import { useAuth } from "@/contexts/auth.context";
+import { createClient } from "@/supabase/client";
+import { Box, Button, Modal, TextField } from "@mui/material";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { FormikHelpers, useFormik } from "formik";
+import React, { ChangeEvent, useState } from "react";
+import * as yup from "yup";
 
 interface FormValues {
   commentContent: string;
@@ -51,7 +51,7 @@ const CommentModal: React.FC<CommentModalProps> = ({
     },
     onSuccess: () => {
       setSuccessModalOpen(true);
-      queryClient.invalidateQueries(["comments", postId]);
+      queryClient.invalidateQueries({ queryKey: ["comments", postId] });
     },
     onError: (error: any) => {
       console.error("Error submitting the form", error);
