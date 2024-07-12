@@ -115,7 +115,7 @@ const CommentModal: React.FC<CommentModalProps> = ({
             </div>
             <div className="flex items-center">
               <img
-                src={userData?.imageUrl || "/images/profile-placeholder.png"}
+                src={userData?.imageUrl || "/assets/images/profile-placeholder.png"}
                 alt="프로필"
                 className="w-10 h-10 rounded-full mr-2"
               />

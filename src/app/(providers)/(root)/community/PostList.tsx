@@ -97,7 +97,7 @@ const PostList: React.FC<PostListProps> = ({ posts }) => {
           <div key={post.id} className="border p-6 mb-6 rounded-lg shadow-lg bg-white">
             <div className="flex items-center mb-4">
               <img
-                src={postUserData[post.user_id]?.imageUrl || "/images/profile-placeholder.png"}
+                src={postUserData[post.user_id]?.imageUrl || "/assets/images/profile-placeholder.png"}
                 alt="프로필"
                 className="w-12 h-12 rounded-full mr-4"
               />

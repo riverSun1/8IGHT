@@ -15,7 +15,7 @@ export default function UserProfileImage({
     <div className="flex justify-center items-center mb-6 relative">
       <div className="relative w-40 h-40 items-center">
         <Image
-          src={imageUrl || "/images/profile-placeholder.png"}
+          src={imageUrl || "/assets/images/profile-placeholder.png"}
           width={40}
           height={40}
           objectFit="cover"
