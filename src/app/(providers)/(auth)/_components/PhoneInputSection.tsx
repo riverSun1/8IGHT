@@ -10,6 +10,7 @@ import {
 } from "react";
 
 import { CodeGlobalObj } from "@/app/api/auth/code-global/route";
+import { useCostumModal } from "@/contexts/modal.context";
 import { handleCheckType } from "../sign-up/page";
 import ArrowDownSvg from "./icons/ArrowDownSvg";
 
@@ -43,6 +44,8 @@ function PhoneInputSection({
   const [timeLeft, setTimeLeft] = useState<number>(DEFAULT_TIME);
   const timeRef = useRef<NodeJS.Timeout | null>(null);
 
+  const { handleOpen } = useCostumModal();
+
   const handleChangePhoneNum: ChangeEventHandler<HTMLInputElement> = (e) => {
     setPhonNum(e.target.value);
     setIsPhone(false);
@@ -55,7 +58,11 @@ function PhoneInputSection({
     setTimeOut(false);
     const randomFourDigitNumber = Math.floor(1000 + Math.random() * 9000);
     setRandomNum(`${randomFourDigitNumber}`);
-    alert(`번호 : ${randomFourDigitNumber}`);
+
+    handleOpen({
+      title: `${randomFourDigitNumber}`,
+      description: `인증 번호를 입력해주세요.`,
+    });
 
     setTimeLeft(DEFAULT_TIME);
 
@@ -70,11 +77,18 @@ function PhoneInputSection({
     if (randomNum === accessCode) {
       setIsSuccess(true);
       handleSuccess(true);
-      alert(`성공`);
+      handleOpen({
+        title: "인증 성공",
+        description: "인증에 성공했습니다.",
+      });
+      if (timeRef.current) clearInterval(timeRef.current);
     } else {
       setIsSuccess(false);
       handleSuccess(false);
-      alert(`실패`);
+      handleOpen({
+        title: "인증 실패",
+        description: "인증번호를 다시 확인해주세요.",
+      });
     }
   };
 

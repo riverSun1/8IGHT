@@ -1,45 +1,32 @@
 "use client";
 
-import {
-  getResumes,
-  // getResumes,
-  getUser,
-  getUserFile,
-} from "@/app/api/detail-page/[id]/route";
 import { useAuth } from "@/contexts/auth.context";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 import { useRef, useState } from "react";
+
+export type ApplyButtonProps = {
+  email: string;
+};
 
 const ApplyButton = () => {
   const { me } = useAuth();
   const [apply, setApply] = useState(false);
-  const [user, setUser] = useState(null);
   const [files, setFiles] = useState([]);
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
 
-  //supabase user 정보 가져오기
-  const { data } = useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      try {
-        const response = await getUser(me?.email);
-        setUser(data);
-        return response;
-      } catch (error) {
-        console.log("error", error);
-      }
-    },
-  });
-
-  //현재 로그인 된 user Email하고 supabase Email이 같은 파일만 가져오기
   const { data: file } = useQuery({
     queryKey: ["userFile"],
     queryFn: async () => {
       try {
-        const response = await getUserFile(me?.email);
-        setFiles(file);
-        return response;
+        const response = await axios.get("/api/detail-page/file", {
+          params: {
+            email: me?.email,
+          },
+        });
+        setFiles(response.data);
+        return response.data;
       } catch (error) {
         console.log("error", error);
       }
@@ -51,19 +38,16 @@ const ApplyButton = () => {
     queryKey: ["userResumes"],
     queryFn: async () => {
       try {
-        const response = await getResumes(me?.email);
-        setFiles(resumes);
-        return response;
-      } catch (error) {
-        console.log("error", error);
-      }
+        const response = await axios.get("/api/detail-page/resume", {
+          params: {
+            email: me?.email,
+          },
+        });
+        setFiles(response.data);
+        return response.data;
+      } catch (error) {}
     },
   });
-
-  console.log("file", files);
-  console.log("me", me);
-
-  console.log("userData", user);
 
   const clickHandler = () => {
     setApply(!apply);
@@ -105,7 +89,7 @@ const ApplyButton = () => {
             </div>
             <div className=" flex justify-start items-center py-3 border-b">
               <p className=" text-xs text-slate-400 pr-6">이메일</p>
-              <p>{!user ? null : user[0]?.email}</p>
+              <p>{!me ? "로그인을 해 주세요" : me.email}</p>
             </div>
             <div className="py-3 border-b">
               <label form="name" className=" text-xs text-slate-400 pr-6">

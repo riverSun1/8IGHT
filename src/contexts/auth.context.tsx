@@ -1,5 +1,6 @@
 "use client";
 
+import { createClient } from "@/supabase/client";
 import { User } from "@supabase/supabase-js";
 import {
   createContext,
@@ -8,7 +9,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { createClient } from "@/supabase/client";
 
 type AuthContextValue = {
   isInitialized: boolean;
@@ -16,7 +16,6 @@ type AuthContextValue = {
   me: User | null;
 
   userData: { nickname: string | null; imageUrl: string | null } | null;
-  logIn: (email: string, password: string) => void;
   logIn: (email: string, password: string) => Promise<{ status: number }>;
   logOut: () => void;
   signUp: (email: string, password: string) => Promise<{ status: number }>;
@@ -27,7 +26,6 @@ const initialValue: AuthContextValue = {
   isLoggedIn: false,
   me: null,
   userData: null,
-  logIn: () => {},
   logIn: async () => ({ status: 0 }),
   logOut: () => {},
   signUp: async () => ({ status: 0 }),
@@ -62,8 +60,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   // 로그인 함수
   const logIn: AuthContextValue["logIn"] = async (email, password) => {
     if (!email || !password) {
-      alert("이메일, 비밀번호 모두 채워 주세요!");
-      return { status: 401 }; // 상태 코드 추가;
+      return { status: 401, message: "이메일, 비밀번호 모두 채워 주세요!" };
     }
     const data = {
       email,
@@ -78,21 +75,18 @@ export function AuthProvider({ children }: PropsWithChildren) {
     fetchUserData(user.id);
 
     if (response.status === 401) {
-      return { status: 401 };
+      return { status: 401, message: "로그인에 실패했습니다." };
     }
     return { status: 200 };
-
   };
 
   // 가입 함수
   const signUp: AuthContextValue["signUp"] = async (email, password) => {
     if (!email || !password) {
-      alert("이메일, 비밀번호 모두 채워 주세요!");
-      return { status: 401 }; // 상태 코드 추가
+      return { status: 401, message: "이메일, 비밀번호 모두 채워 주세요." };
     }
     if (me) {
-      alert("이미 로그인이 되어있어요");
-      return { status: 400 }; // 상태 코드 추가
+      return { status: 400, message: "이미 로그인이 되어있어요." };
     }
     const data = {
       email,
@@ -102,23 +96,20 @@ export function AuthProvider({ children }: PropsWithChildren) {
       method: "POST",
       body: JSON.stringify(data),
     });
-    console.log("response", response);
     const user = await response.json();
     setMe(user);
 
     fetchUserData(user.id);
 
-
     if (response.status === 401) {
-      return { status: 401 };
+      return { status: 401, message: "회원가입에 실패했습니다." };
     }
     return { status: 200 };
-
   };
 
   // 로그아웃 함수
   const logOut: AuthContextValue["logOut"] = async () => {
-    if (!me) return alert("로그인하고 눌러주세요!");
+    if (!me) return { status: 401, message: "로그인하고 눌러주세요." };
     await fetch("http://localhost:3000/api/auth/log-out", {
       method: "DELETE",
     });
