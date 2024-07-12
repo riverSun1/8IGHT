@@ -71,56 +71,56 @@ export type Database = {
       resumes: {
         Row: {
           address: string | null
-          awards: string | null
+          awards: string[] | null
           birth_date: string | null
-          career: string | null
+          career: string[] | null
           created_at: string
-          education: string | null
+          education: string[] | null
           email: string | null
           gender: string | null
           id: string
           introduction: string | null
-          links: string | null
+          links: string[] | null
           name: string | null
           personalInfo: string | null
           phone: string | null
-          skills: string | null
+          skills: string[] | null
           title: string | null
         }
         Insert: {
           address?: string | null
-          awards?: string | null
+          awards?: string[] | null
           birth_date?: string | null
-          career?: string | null
+          career?: string[] | null
           created_at?: string
-          education?: string | null
+          education?: string[] | null
           email?: string | null
           gender?: string | null
           id?: string
           introduction?: string | null
-          links?: string | null
+          links?: string[] | null
           name?: string | null
           personalInfo?: string | null
           phone?: string | null
-          skills?: string | null
+          skills?: string[] | null
           title?: string | null
         }
         Update: {
           address?: string | null
-          awards?: string | null
+          awards?: string[] | null
           birth_date?: string | null
-          career?: string | null
+          career?: string[] | null
           created_at?: string
-          education?: string | null
+          education?: string[] | null
           email?: string | null
           gender?: string | null
           id?: string
           introduction?: string | null
-          links?: string | null
+          links?: string[] | null
           name?: string | null
           personalInfo?: string | null
           phone?: string | null
-          skills?: string | null
+          skills?: string[] | null
           title?: string | null
         }
         Relationships: []

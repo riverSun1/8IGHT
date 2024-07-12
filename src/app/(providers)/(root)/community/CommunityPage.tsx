@@ -12,7 +12,7 @@ import SideBar from "./SideBar";
 const CommunityPage: React.FC = () => {
   const supabase = createClient();
   const {
-    data: posts,
+    data: posts = [],
     isLoading,
     error,
     refetch,
@@ -65,11 +65,7 @@ const CommunityPage: React.FC = () => {
               </div>
             </div>
             <div className="pt-4 h-[calc(100vh-120px)] overflow-y-auto scrollbar-hide">
-              {isLoading ? (
-                <p>Loading...</p>
-              ) : (
-                <PostList posts={posts} />
-              )}
+              {isLoading ? <p>Loading...</p> : <PostList posts={posts} />}
             </div>
           </main>
         </div>
