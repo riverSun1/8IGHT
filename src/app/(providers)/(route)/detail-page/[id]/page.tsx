@@ -3,6 +3,7 @@
 import { jobDetailType } from "@/types/jobDetailType";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import ApplyButton from "../_components/ApplyButton";
 
 const DetailPage = ({ params }: { params: { id: string } }) => {
   const { data, isLoading, error } = useQuery({
@@ -80,7 +81,7 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
         <div className="flex flex-col gap-2 pb-4">
           <h2 className="font-semibold text-lg">자격 요건</h2>
           <div className="flex gap-2">
-            {data?.result?.acbgCondNmLst.split(",").map((education, index) => (
+            {data?.result.acbgCondNmLst.split(",").map((education, index) => (
               <div key={index} className=" border p-1 rounded">
                 <p className="text-sm">{education}</p>
               </div>
@@ -116,9 +117,7 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
           </div>
         </div>
       </div>
-      <div className=" w-1/5 flex justify-center items-center bg-blue-500 rounded-lg">
-        <button className="p-4 text-white">지원하기</button>
-      </div>
+      <ApplyButton />
     </div>
   );
 };
