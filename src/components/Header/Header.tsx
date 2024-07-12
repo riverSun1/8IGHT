@@ -11,6 +11,9 @@ const Header = () => {
         </Link>
         <div className="flex flex-row gap-3 ml-auto">
           <div className="border-2 p-2 border-gray-300 rounded-md text-blue-500 font-bold">
+            <Link href="/community">소셜</Link>
+          </div>
+          <div className="border-2 p-2 border-gray-300 rounded-md text-blue-500 font-bold">
             <Link href="/sign-up">회원가입</Link>
           </div>
           <div className="border-2 p-2 border-gray-300 rounded-md text-blue-500 font-bold">
