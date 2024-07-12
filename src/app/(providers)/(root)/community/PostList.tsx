@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Database } from "@/supabase/types";
 import { createClient } from "@/supabase/client";
-import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+// import { Database } from "@/supabase/types";
 import CommentIcon from "@mui/icons-material/Comment";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import React, { useEffect, useState } from "react";
+import { Database } from "../../../../../types/supabase";
 import CommentModal from "./CommentModal";
 
-interface PostListProps {
-  posts: Database["public"]["Tables"]["community_post"]["Row"][];
-}
+type CommunityPost = Database["public"]["Tables"]["community_post"]["Row"];
 
-const PostList: React.FC<PostListProps> = ({ posts }) => {
+export const PostList: React.FC<{ posts: CommunityPost[] }> = ({ posts }) => {
   const supabase = createClient();
   const [postUserData, setPostUserData] = useState<{
     [key: string]: {
@@ -68,7 +67,7 @@ const PostList: React.FC<PostListProps> = ({ posts }) => {
         throw error;
       }
 
-      const newLikeCount = data?.new_like_count || 0;
+      const newLikeCount = (data && data[0].new_like_count) || 0;
       setLikes((prevLikes) => ({
         ...prevLikes,
         [postId]: newLikeCount,
@@ -94,15 +93,24 @@ const PostList: React.FC<PostListProps> = ({ posts }) => {
         <p className="text-center text-gray-500">No posts available</p>
       ) : (
         posts.map((post) => (
-          <div key={post.id} className="border p-6 mb-6 rounded-lg shadow-lg bg-white">
+          <div
+            key={post.id}
+            className="border p-6 mb-6 rounded-lg shadow-lg bg-white"
+          >
             <div className="flex items-center mb-4">
               <img
-                src={postUserData[post.user_id]?.imageUrl || "/images/profile-placeholder.png"}
+                src={postUserData[post.user_id]?.imageUrl || "/assets/images/profile-placeholder.png"}
+                src={
+                  (post.user_id && postUserData[post.user_id]?.imageUrl) ||
+                  "/images/profile-placeholder.png"
+                }
                 alt="프로필"
                 className="w-12 h-12 rounded-full mr-4"
               />
               <span className="text-lg font-semibold text-gray-800">
-                {postUserData[post.user_id]?.nickname || postUserData[post.user_id]?.email || "Unknown"}
+                {(post.user_id && postUserData[post.user_id]?.nickname) ||
+                  (post.user_id && postUserData[post.user_id]?.email) ||
+                  "Unknown"}
               </span>
             </div>
             <div className="mb-4">
@@ -116,7 +124,9 @@ const PostList: React.FC<PostListProps> = ({ posts }) => {
               )}
             </div>
             <div className="text-gray-500 text-sm mb-4">
-              {new Date(post.created_at).toLocaleString()}
+              {new Date(
+                post.created_at ? post.created_at : "0"
+              ).toLocaleString()}
             </div>
             <div className="flex justify-end space-x-4">
               <button
