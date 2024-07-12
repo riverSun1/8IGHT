@@ -1,8 +1,16 @@
+"use client";
+
+import { useAuth } from "@/contexts/auth.context";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "../../../public/wanted_logo.jpg";
 
 const Header = () => {
+  const { me, isLoggedIn, logOut } = useAuth();
+  const handleClickLogOut = async () => {
+    logOut();
+  };
+
   return (
     <header className="border-b border-gray-300">
       <div className="container mx-auto max-w-[1400px] px-5 h-16 flex items-center">
@@ -37,6 +45,7 @@ const Header = () => {
           </div>
         </div>
         <div className="flex flex-row gap-3 ml-auto">
+<<<<<<< HEAD
           <div className="border p-2 border-gray-300 rounded-md text-blue-500 font-bold hover:bg-gray-100 transition-colors duration-300 cursor-pointer">
             <Link href="/profile">마이 페이지</Link>
           </div>
@@ -47,6 +56,27 @@ const Header = () => {
             <Link href="/log-in">로그인</Link>
 >>>>>>> ce52cdd566392cdfbcea6e2fdd8c25e8b9e4ffe7
           </div>
+=======
+          {isLoggedIn ? (
+            <>
+              <div className="border p-2 border-gray-300 rounded-md text-blue-500 font-bold hover:bg-gray-100 transition-colors duration-300 cursor-pointer">
+                <Link href="/profile">마이 페이지</Link>
+              </div>
+              <div className="border p-2 border-gray-300 rounded-md text-blue-500 font-bold hover:bg-gray-100 transition-colors duration-300 cursor-pointer">
+                <button onClick={handleClickLogOut}>로그아웃</button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="border p-2 border-gray-300 rounded-md text-blue-500 font-bold hover:bg-gray-100 transition-colors duration-300 cursor-pointer">
+                <Link href="/sign-up">회원가입</Link>
+              </div>
+              <div className="border p-2 border-gray-300 rounded-md text-blue-500 font-bold hover:bg-gray-100 transition-colors duration-300 cursor-pointer">
+                <Link href="/log-in">로그인</Link>
+              </div>
+            </>
+          )}
+>>>>>>> 067e26e2f2a78b877be6b677d0e7192617b3d19b
         </div>
       </div>
     </header>

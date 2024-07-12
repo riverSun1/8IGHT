@@ -1,5 +1,6 @@
 "use client";
 
+import { createClient } from "@/supabase/client";
 import { User } from "@supabase/supabase-js";
 import {
   createContext,
@@ -8,7 +9,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { createClient } from "@/supabase/client";
 
 type AuthContextValue = {
   isInitialized: boolean;
@@ -16,7 +16,6 @@ type AuthContextValue = {
   me: User | null;
 
   userData: { nickname: string | null; imageUrl: string | null } | null;
-  logIn: (email: string, password: string) => void;
   logIn: (email: string, password: string) => Promise<{ status: number }>;
   logOut: () => void;
   signUp: (email: string, password: string) => Promise<{ status: number }>;
@@ -27,7 +26,6 @@ const initialValue: AuthContextValue = {
   isLoggedIn: false,
   me: null,
   userData: null,
-  logIn: () => {},
   logIn: async () => ({ status: 0 }),
   logOut: () => {},
   signUp: async () => ({ status: 0 }),
@@ -80,7 +78,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
       return { status: 401, message: "로그인에 실패했습니다." };
     }
     return { status: 200 };
-
   };
 
   // 가입 함수
@@ -89,7 +86,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
       return { status: 401, message: "이메일, 비밀번호 모두 채워 주세요." };
     }
     if (me) {
-      alert("");
       return { status: 400, message: "이미 로그인이 되어있어요." };
     }
     const data = {
@@ -105,12 +101,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
     fetchUserData(user.id);
 
-
     if (response.status === 401) {
       return { status: 401, message: "회원가입에 실패했습니다." };
     }
     return { status: 200 };
-
   };
 
   // 로그아웃 함수
