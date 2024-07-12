@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 interface FileButtonProps {
   onFileUpload: (file: File) => void;
@@ -14,8 +15,15 @@ const FileButton: React.FC<FileButtonProps> = ({ onFileUpload }) => {
   return (
     <label className="cursor-pointer">
       <input type="file" onChange={handleFileChange} className="hidden" />
-      <div className="flex items-center justify-center border-2 border-dashed border-gray-300 rounded-md p-4">
-        <span className="text-gray-500">파일 업로드</span>
+      <div className="border border-gray-300 bg-white p-4 rounded flex flex-col items-center justify-center w-60 h-48 cursor-pointer">
+        <Image
+          src="/file-upload.png"
+          alt="File Upload Icon"
+          width={60}
+          height={60}
+          className="mb-4"
+        />
+        <div className="text-lg font-semibold ">파일 업로드</div>
       </div>
     </label>
   );
