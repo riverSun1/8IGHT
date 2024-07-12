@@ -99,6 +99,7 @@ export const PostList: React.FC<{ posts: CommunityPost[] }> = ({ posts }) => {
           >
             <div className="flex items-center mb-4">
               <img
+                src={postUserData[post.user_id]?.imageUrl || "/assets/images/profile-placeholder.png"}
                 src={
                   (post.user_id && postUserData[post.user_id]?.imageUrl) ||
                   "/images/profile-placeholder.png"

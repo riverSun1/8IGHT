@@ -27,8 +27,8 @@ const validationSchema = yup.object({
 interface PostModalProps {
   open: boolean;
   handleClose: () => void;
-  addPost: (post: any) => void; // post의 타입도 정의 가능하다면 추가해 주세요
-  refreshPosts: () => void; // 리스트를 새로고침하는 함수
+  addPost: (post: any) => void;
+  refreshPosts: () => void;
 }
 
 const PostModal: React.FC<PostModalProps> = ({
@@ -60,7 +60,7 @@ const PostModal: React.FC<PostModalProps> = ({
             if (response.data && response.data.length > 0) {
               addPost(response.data[0]);
             }
-            setSuccessModalOpen(true); // 성공 모달 열기
+            setSuccessModalOpen(true);
           } else {
             console.error("Error:", response.data.error);
           }
@@ -104,7 +104,7 @@ const PostModal: React.FC<PostModalProps> = ({
 
   const handleSuccessClose = () => {
     setSuccessModalOpen(false);
-    refreshPosts(); // 리스트 새로고침
+    refreshPosts();
     handleClose();
   };
 
@@ -134,7 +134,7 @@ const PostModal: React.FC<PostModalProps> = ({
             </div>
             <div className="flex items-center">
               <Avatar
-                src={userData?.imageUrl || "/images/profile-placeholder.png"}
+                src={userData?.imageUrl || "/assets/images/profile-placeholder.png"}
                 alt="프로필"
                 className="w-12 h-12 rounded-full mr-4"
               />
@@ -193,31 +193,48 @@ const PostModal: React.FC<PostModalProps> = ({
 
       <Modal open={confirmCancel} onClose={confirmCancelClose}>
         <Box
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg"
-          style={{ minHeight: "200px", minWidth: "300px" }}
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded-lg shadow-lg"
+          style={{ minHeight: "150px", minWidth: "300px" }}
         >
           <div className="text-center">
-            <p className="text-lg mb-4">글 작성을 중단하시겠습니까?</p>
-            <Button onClick={confirmCancelClose} className="text-gray-500 mr-4">
-              취소
-            </Button>
-            <Button onClick={confirmCancelExit} className="text-blue-500">
-              나가기
-            </Button>
+            <Typography className="text-xl font-bold mb-4">
+              글 작성을 중단하시겠습니까?
+            </Typography>
+            <div className="flex justify-center space-x-4 mt-7">
+              <Button
+                onClick={confirmCancelClose}
+                className="text-gray-500 border border-gray-300 rounded px-4 py-2"
+              >
+                취소
+              </Button>
+              <Button
+                onClick={confirmCancelExit}
+                className="text-white bg-blue-500 rounded px-4 py-2"
+              >
+                나가기
+              </Button>
+            </div>
           </div>
         </Box>
       </Modal>
 
       <Modal open={successModalOpen} onClose={handleSuccessClose}>
         <Box
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg"
-          style={{ minHeight: "200px", minWidth: "300px" }}
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded-lg shadow-lg"
+          style={{ minHeight: "150px", minWidth: "300px" }}
         >
           <div className="text-center">
-            <p className="text-lg mb-4">글이 작성되었습니다!</p>
-            <Button onClick={handleSuccessClose} className="text-blue-500">
-              확인
-            </Button>
+            <Typography className="text-lg mb-4">
+              글이 작성되었습니다!
+            </Typography>
+            <div className="flex justify-center space-x-4 mt-7">
+              <Button
+                onClick={handleSuccessClose}
+                className="text-white bg-blue-500 rounded px-4 py-2"
+              >
+                확인
+              </Button>
+            </div>
           </div>
         </Box>
       </Modal>

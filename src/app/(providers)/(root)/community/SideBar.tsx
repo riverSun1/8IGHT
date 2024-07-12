@@ -14,7 +14,7 @@ const SideBar = () => {
     <aside className="w-1/4 p-6 bg-white border-r border-gray-300 h-screen flex flex-col items-center">
       <div className="flex flex-col items-center py-6 border-b border-gray-300">
         <img
-          src={userData?.imageUrl || "/images/profile-placeholder.png"}
+          src={userData?.imageUrl || "/assets/images/profile-placeholder.png"}
           alt="프로필"
           className="w-24 h-24 rounded-full mb-4"
         />
