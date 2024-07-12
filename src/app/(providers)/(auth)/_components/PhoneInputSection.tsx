@@ -1,13 +1,16 @@
 "use client";
 
-import { CodeGlobalObj } from "@/app/api/auth/code-global/route";
 import axios from "axios";
 import {
   ChangeEventHandler,
   MouseEventHandler,
   useEffect,
+  useRef,
   useState,
 } from "react";
+
+import { CodeGlobalObj } from "@/app/api/auth/code-global/route";
+import { handleCheckType } from "../sign-up/page";
 import ArrowDownSvg from "./icons/ArrowDownSvg";
 
 // 인증번호를 입력해주세요.
@@ -16,17 +19,29 @@ import ArrowDownSvg from "./icons/ArrowDownSvg";
 // 인증 시간이 만료되었습니다. 다시 시도해 주세요.
 
 const regPhone = /^01([0|1|6|7|8|9])-?([0-9]{3,4})-?([0-9]{4})$/;
-const DEFAULT_TIME = 3000000;
+const DEFAULT_TIME = 300;
 
-function PhoneInputSection() {
+const formatTime = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `0${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+};
+
+function PhoneInputSection({
+  handleSuccess,
+}: {
+  handleSuccess: handleCheckType;
+}) {
   const [selects, setSelects] = useState<CodeGlobalObj[] | null>(null);
   const [initial, setInitial] = useState<boolean>(false);
   const [timeOut, setTimeOut] = useState<boolean>(true);
-  const [timeLeft, setTimeLeft] = useState<number>(DEFAULT_TIME);
   const [phoneNum, setPhonNum] = useState<string>("");
   const [isPhone, setIsPhone] = useState<boolean>(false);
   const [accessCode, setAccessCode] = useState<string>("");
+  const [isSuccess, setIsSuccess] = useState<boolean>(false);
   const [randomNum, setRandomNum] = useState<string>("");
+  const [timeLeft, setTimeLeft] = useState<number>(DEFAULT_TIME);
+  const timeRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleChangePhoneNum: ChangeEventHandler<HTMLInputElement> = (e) => {
     setPhonNum(e.target.value);
@@ -35,19 +50,30 @@ function PhoneInputSection() {
       setIsPhone(true);
     }
   };
-  const handleClickSumitPhoneNum: MouseEventHandler<HTMLButtonElement> = () => {
+  const handleClickGetAccessNum: MouseEventHandler<HTMLButtonElement> = () => {
     setInitial(true);
     setTimeOut(false);
     const randomFourDigitNumber = Math.floor(1000 + Math.random() * 9000);
     setRandomNum(`${randomFourDigitNumber}`);
     alert(`번호 : ${randomFourDigitNumber}`);
+
+    setTimeLeft(DEFAULT_TIME);
+
+    timeRef.current = setInterval(() => {
+      setTimeLeft((prevTime) => prevTime - 1);
+    }, 1000);
   };
+
   const handleClickAccessCodeCheck: MouseEventHandler<
     HTMLParagraphElement
   > = () => {
     if (randomNum === accessCode) {
+      setIsSuccess(true);
+      handleSuccess(true);
       alert(`성공`);
     } else {
+      setIsSuccess(false);
+      handleSuccess(false);
       alert(`실패`);
     }
   };
@@ -66,6 +92,13 @@ function PhoneInputSection() {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (timeLeft < 0 && timeRef.current) {
+      setTimeOut(true);
+      return clearInterval(timeRef.current);
+    }
+  }, [timeLeft]);
 
   return (
     <div className="">
@@ -95,7 +128,7 @@ function PhoneInputSection() {
           />
           {!initial ? (
             <button
-              onClick={handleClickSumitPhoneNum}
+              onClick={handleClickGetAccessNum}
               disabled={!isPhone}
               className={`${
                 isPhone
@@ -107,6 +140,7 @@ function PhoneInputSection() {
             </button>
           ) : (
             <button
+              onClick={handleClickGetAccessNum}
               className={`${
                 timeOut
                   ? "bg-[#f4f4fe] text-[#d9d9d9]"
@@ -137,7 +171,21 @@ function PhoneInputSection() {
             </p>
           )}
         </div>
-        {<p></p>}
+        {initial && !isSuccess && (
+          <div className="text-[13px]">
+            <p className={`${timeOut ? "text-red-500" : ""}`}>
+              {timeOut
+                ? "인증 시간이 만료되었습니다. 다시 시도해 주세요."
+                : "인증번호를 입력해주세요."}
+            </p>
+            <p className={`${timeOut ? "text-red-500" : ""}`}>
+              유효시간 {formatTime(timeLeft)}
+            </p>
+          </div>
+        )}
+        {isSuccess && (
+          <p className="text-[13px] text-blue-500">인증에 성공했습니다.</p>
+        )}
       </div>
     </div>
   );
