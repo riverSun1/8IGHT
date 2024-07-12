@@ -14,8 +14,8 @@ interface WorkBoxType {
   title: string;
   email: string;
   fileURL?: string;
-  file_name?: string;
-  created_at: string;
+  file_name?: string | null;
+  created_at: string | null;
 }
 
 const supabase = createClient();
@@ -36,7 +36,7 @@ const ResumePage = () => {
       fetchResumes();
       fetchFileUploads();
     }
-  }, [isLoggedIn, me, router]);
+  }, [isLoggedIn, me]);
 
   const fetchResumes = async () => {
     if (!me?.email) return;
@@ -100,7 +100,7 @@ const ResumePage = () => {
     if (!selectedFile) return;
 
     const fileName = `${Date.now()}_${selectedFile.name}`;
-    const { data, error: uploadError } = await supabase.storage
+    const { data: uploadData, error: uploadError } = await supabase.storage
       .from("uploads")
       .upload(`public/${fileName}`, selectedFile);
 
@@ -116,7 +116,8 @@ const ResumePage = () => {
             file_name: selectedFile.name,
             email: me?.email ?? "",
           },
-        ]);
+        ])
+        .select();
 
       if (insertError) {
         console.error("Error saving file URL to database:", insertError);
@@ -163,7 +164,7 @@ const ResumePage = () => {
             <WorkBox
               id={box.id}
               title={box.title || box.file_name || ""}
-              date={box.created_at.split("T")[0]}
+              date={box.created_at?.split("T")[0] || ""}
               onDelete={() => handleDelete(box.id)}
               onEdit={() => handleEdit(box.id)}
               onTitleClick={() => handleDownload(box.id)}
