@@ -124,16 +124,16 @@ export function AuthProvider({ children }: PropsWithChildren) {
   };
 
   useEffect(() => {
-    fetch(process.env.NEXT_PUBLIC_DOMAIN + "/api/auth/me").then(
-      async (response) => {
+    fetch(process.env.NEXT_PUBLIC_DOMAIN + "/api/auth/me")
+      .then(async (response) => {
         if (response.status === 200) {
           const user = await response.json();
           setMe(user);
           fetchUserData(user.id);
         }
         setIsInitialized(true);
-      }
-    );
+      })
+      .catch(() => setIsInitialized(true));
   }, []);
 
   const value = {
