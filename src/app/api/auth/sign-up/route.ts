@@ -12,6 +12,7 @@ export async function POST(request: NextRequest) {
     email,
     password,
   });
+  if (!user) return NextResponse.json("", { status: 401 });
 
   return NextResponse.json(user);
 }
