@@ -1,11 +1,11 @@
-import React, { Children } from "react";
-import RootHeader from "../_components/Header";
 import { PropsWithChildren } from "react";
+
+import Header from "@/components/Header/Header";
 
 function RootLayout({ children }: PropsWithChildren) {
   return (
     <>
-      <RootHeader />
+      <Header />
       {children}
     </>
   );
