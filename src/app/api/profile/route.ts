@@ -1,42 +1,33 @@
 import { createClient } from "@/supabase/client";
-import { NextRequest, NextResponse } from "next/server";
+const supabase = createClient();
 
-export type UserProfile = {
+interface UserProfile {
   nickname: string;
   imageUrl: string;
   position: string;
   job: string;
   career: string;
-};
-interface ErrorResponse {
-  error: string;
 }
 
-export const GET = async (request: NextRequest): Promise<NextResponse> => {
-  const supabase = createClient();
-  const userId = request.nextUrl.searchParams.get("userId");
-  const response = await supabase
+export const fetchUserProfile = async (userId: string) => {
+  const { data: profile, error: profileError } = await supabase
     .from("users")
     .select("nickname, imageUrl, position, job, career")
     .eq("id", userId)
     .single();
 
-  const profile: UserProfile | null = response.data;
-  const profileError = response.error;
   if (profileError) {
-    return NextResponse.json(null);
+    console.error(profileError);
+    return null;
   }
 
-  return NextResponse.json(profile);
+  return profile;
 };
 
-export const POST = async (request: NextRequest): Promise<NextResponse> => {
-  // userId: string, profile: UserProfile
-  const supabase = createClient();
-  const data = await request.json();
-  const profile = data.profile;
-  const userId = data.userId;
-
+export const updateUserProfile = async (
+  userId: string,
+  profile: UserProfile
+) => {
   const { error } = await supabase
     .from("users")
     .update(profile)
@@ -44,8 +35,8 @@ export const POST = async (request: NextRequest): Promise<NextResponse> => {
 
   if (error) {
     console.error(error);
-    return NextResponse.json(false);
+    return false;
   }
 
-  return NextResponse.json(true);
+  return true;
 };
