@@ -77,7 +77,14 @@ const NewResumePage = () => {
         if (error) {
           console.error("Error fetching resume:", error);
         } else {
-          setFormData(data);
+          setFormData({
+            ...data,
+            career: Array.isArray(data.career) ? data.career : [""],
+            education: Array.isArray(data.education) ? data.education : [""],
+            skills: Array.isArray(data.skills) ? data.skills : [""],
+            awards: Array.isArray(data.awards) ? data.awards : [""],
+            links: Array.isArray(data.links) ? data.links : [""],
+          });
         }
       };
       fetchResume();
@@ -157,7 +164,8 @@ const NewResumePage = () => {
   return (
     <div className="max-w-screen-2xl mx-auto bg-white p-6 rounded-lg shadow-sm">
       <h1 className="text-2xl font-bold mb-4">
-        기업에게 나에 대해 알려줍시다. 강점, 목표, 관심분야도 좋아요😊
+        {id ? "이력서 수정" : "새 이력서 작성"} - 기업에게 나에 대해 알려줍시다.
+        강점, 목표, 관심분야도 좋아요😊
       </h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         <Section label="이력서 제목 (필수)">
