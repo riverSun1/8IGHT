@@ -51,7 +51,7 @@ const ApplyButton = () => {
     queryKey: ["userResumes"],
     queryFn: async () => {
       try {
-        const response = await getResumes(me?.email);
+        const response: any[] | null | undefined = await getResumes(me?.email);
         setFiles(resumes);
         return response;
       } catch (error) {
