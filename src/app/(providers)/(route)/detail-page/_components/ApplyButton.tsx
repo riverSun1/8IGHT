@@ -1,6 +1,10 @@
 "use client";
 
-import { getUser, getUserFile } from "@/app/api/detail-page/[id]/route";
+import {
+  getResumes,
+  getUser,
+  getUserFile,
+} from "@/app/api/detail-page/[id]/route";
 import { useAuth } from "@/contexts/auth.context";
 import { useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
@@ -32,6 +36,19 @@ const ApplyButton = () => {
       try {
         const response = await getUserFile(me?.email);
         setFiles(file);
+        return response;
+      } catch (error) {
+        console.log("error", error);
+      }
+    },
+  });
+
+  const { data: resumes } = useQuery({
+    queryKey: ["userResumes"],
+    queryFn: async () => {
+      try {
+        const response = await getResumes(me?.email);
+        setFiles(resumes);
         return response;
       } catch (error) {
         console.log("error", error);
