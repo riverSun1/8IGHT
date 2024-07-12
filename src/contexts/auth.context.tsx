@@ -124,7 +124,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   };
 
   useEffect(() => {
-    fetch(process.env.NEXT_PUBLIC_DOMAIN + "api/auth/me").then(
+    fetch(process.env.NEXT_PUBLIC_DOMAIN + "/api/auth/me").then(
       async (response) => {
         if (response.status === 200) {
           const user = await response.json();
