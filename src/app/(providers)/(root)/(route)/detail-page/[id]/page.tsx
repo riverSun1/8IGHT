@@ -12,11 +12,8 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
       try {
         const response = await axios.get(`/api/detail-page/${params.id}`);
         const data: jobDetailType = response.data;
-        // console.log("데이터", data);
         return data;
-      } catch (error) {
-        // console.log("error", error);
-      }
+      } catch (error) {}
     },
   });
   if (isLoading) {
