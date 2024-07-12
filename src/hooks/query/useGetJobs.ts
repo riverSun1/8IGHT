@@ -18,11 +18,10 @@ export const useGetJobs = () => {
       staleTime: 300000,
 
       getNextPageParam: (lastPage, allPages) => {
-        // 마지막 페이지에서 다음 페이지 번호를 계산할 로직
         if (lastPage.hasNextPage) {
-          return allPages.length + 1; // 다음 페이지 번호
+          return allPages.length + 1;
         }
-        return undefined; // 더 이상 페이지가 없으면 undefined 반환
+        return undefined;
       },
     });
 
