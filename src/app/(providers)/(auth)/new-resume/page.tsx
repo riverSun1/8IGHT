@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/supabase/client";
 import { v4 as uuidv4 } from "uuid";
@@ -8,7 +8,30 @@ import { useAuth } from "@/contexts/auth.context";
 
 const supabase = createClient();
 
-const Section = ({ label, children }) => (
+interface FormData {
+  id: string;
+  title: string;
+  email: string;
+  birth_date: string;
+  name: string;
+  gender: string;
+  address: string;
+  phone: string;
+  personalInfo: string;
+  career: string[];
+  education: string[];
+  skills: string[];
+  awards: string[];
+  introduction: string;
+  links: string[];
+}
+
+interface SectionProps {
+  label: string;
+  children: React.ReactNode;
+}
+
+const Section = ({ label, children }: SectionProps) => (
   <div className="bg-gray-100 p-4 rounded-lg shadow-sm mb-4">
     <label className="block text-gray-700 mb-2">{label}</label>
     <hr className="border-gray-300 mb-2" />
@@ -22,7 +45,7 @@ const NewResumePage = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     id: "",
     title: "",
     email: "",
@@ -59,17 +82,17 @@ const NewResumePage = () => {
       };
       fetchResume();
     }
-  }, [id, isLoggedIn]);
+  }, [id, isLoggedIn, router]);
 
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >,
     index?: number,
-    field?: string
+    field?: keyof FormData
   ) => {
-    if (field) {
-      const newArray = [...formData[field]];
+    if (field && index !== undefined) {
+      const newArray = [...(formData[field] as string[])];
       newArray[index] = e.target.value;
       setFormData({ ...formData, [field]: newArray });
     } else {
@@ -80,11 +103,14 @@ const NewResumePage = () => {
     }
   };
 
-  const handleAddField = (field: string) => {
-    setFormData({ ...formData, [field]: [...formData[field], ""] });
+  const handleAddField = (field: keyof FormData) => {
+    setFormData({
+      ...formData,
+      [field]: [...(formData[field] as string[]), ""],
+    });
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (
@@ -102,8 +128,8 @@ const NewResumePage = () => {
 
     const resumeData = {
       ...formData,
-      id: formData.id || uuidv4(), // 새로운 uuid 생성 또는 기존 id 사용
-      email: me?.email, // 로그인한 사용자의 이메일 사용
+      id: formData.id || uuidv4(),
+      email: me?.email,
     };
 
     try {

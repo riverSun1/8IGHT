@@ -36,7 +36,7 @@ const ResumePage = () => {
       fetchResumes();
       fetchFileUploads();
     }
-  }, [isLoggedIn, me]);
+  }, [isLoggedIn, me, router]);
 
   const fetchResumes = async () => {
     if (!me?.email) return;
@@ -114,19 +114,19 @@ const ResumePage = () => {
           {
             fileURL,
             file_name: selectedFile.name,
-            email: me.email,
+            email: me?.email ?? "",
           },
         ]);
 
       if (insertError) {
         console.error("Error saving file URL to database:", insertError);
-      } else {
+      } else if (insertData && insertData.length > 0) {
         setWorkBoxes((prevBoxes) => [
           ...prevBoxes,
           {
             id: insertData[0].id,
             title: selectedFile.name,
-            email: me.email,
+            email: me?.email ?? "",
             fileURL,
             created_at: insertData[0].created_at,
           },
