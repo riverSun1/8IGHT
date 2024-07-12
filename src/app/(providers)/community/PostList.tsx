@@ -1,22 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { Database } from "@/supabase/types";
 import { createClient } from "@/supabase/client";
-import ThumbUpIcon from '@mui/icons-material/ThumbUp';
-import CommentIcon from '@mui/icons-material/Comment';
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import CommentIcon from "@mui/icons-material/Comment";
 import CommentModal from "./CommentModal";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface PostListProps {
   posts: Database["public"]["Tables"]["community_post"]["Row"][];
 }
 
 const PostList: React.FC<PostListProps> = ({ posts }) => {
-  const [postUserData, setPostUserData] = useState<{ [key: string]: { nickname: string | null, email: string | null, imageUrl: string | null } }>({});
+  const supabase = createClient();
+  const [postUserData, setPostUserData] = useState<{
+    [key: string]: {
+      nickname: string | null;
+      email: string | null;
+      imageUrl: string | null;
+    };
+  }>({});
+  const [likes, setLikes] = useState<{ [key: string]: number }>({});
   const [commentModalOpen, setCommentModalOpen] = useState<string | null>(null);
-  const queryClient = useQueryClient();
 
   const fetchUserData = async (userId: string) => {
-    const supabase = createClient();
     const { data, error } = await supabase
       .from("users")
       .select("nickname, email, imageUrl")
@@ -32,59 +37,45 @@ const PostList: React.FC<PostListProps> = ({ posts }) => {
 
   useEffect(() => {
     const fetchAllUserData = async () => {
-      const userData: { [key: string]: { nickname: string | null, email: string | null, imageUrl: string | null } } = {};
+      const userData: {
+        [key: string]: {
+          nickname: string | null;
+          email: string | null;
+          imageUrl: string | null;
+        };
+      } = {};
+      const likesData: { [key: string]: number } = {};
       for (const post of posts) {
         if (!post.user_id) continue;
         if (!userData[post.user_id]) {
           userData[post.user_id] = await fetchUserData(post.user_id);
         }
+        likesData[post.id] = post.like || 0;
       }
       setPostUserData(userData);
+      setLikes(likesData);
     };
 
     fetchAllUserData();
   }, [posts]);
 
-  const mutation = useMutation({
-    mutationFn: async (postId: string) => {
-      const supabase = createClient();
-
-      // Get current like count
-      const { data: postData, error: fetchError } = await supabase
-        .from("community_post")
-        .select("like")
-        .eq("id", postId)
-        .single();
-
-      if (fetchError || !postData) {
-        throw fetchError;
+  const handleLike = async (postId: string) => {
+    try {
+      const { data, error } = await supabase.rpc("increment_like", {
+        post_id: postId,
+      });
+      if (error) {
+        throw error;
       }
 
-      // Increment like count
-      const newLikeCount = (postData.like || 0) + 1;
-
-      const { error: updateError } = await supabase
-        .from("community_post")
-        .update({ like: newLikeCount })
-        .eq("id", postId);
-
-      if (updateError) {
-        throw updateError;
-      }
-
-      return newLikeCount;
-    },
-    onSuccess: (newLikeCount, postId) => {
-      queryClient.setQueryData(["posts"], (oldData: any) =>
-        oldData.map((post: any) =>
-          post.id === postId ? { ...post, like: newLikeCount } : post
-        )
-      );
-    },
-  });
-
-  const handleLike = (postId: string) => {
-    mutation.mutate(postId);
+      const newLikeCount = data?.new_like_count || 0;
+      setLikes((prevLikes) => ({
+        ...prevLikes,
+        [postId]: newLikeCount,
+      }));
+    } catch (error) {
+      console.error("Error updating like count:", error);
+    }
   };
 
   const handleComment = (postId: string) => {
@@ -100,33 +91,39 @@ const PostList: React.FC<PostListProps> = ({ posts }) => {
   return (
     <div>
       {posts.length === 0 ? (
-        <p>No posts available</p>
+        <p className="text-center text-gray-500">No posts available</p>
       ) : (
         posts.map((post) => (
-          <div key={post.id} className="border p-4 mb-4 rounded shadow">
-            <div className="flex items-center mb-2">
+          <div key={post.id} className="border p-6 mb-6 rounded-lg shadow-lg bg-white">
+            <div className="flex items-center mb-4">
               <img
                 src={postUserData[post.user_id]?.imageUrl || "/images/profile-placeholder.png"}
                 alt="프로필"
-                className="w-10 h-10 rounded-full mr-2"
+                className="w-12 h-12 rounded-full mr-4"
               />
-              <span className="text-gray-500">
+              <span className="text-lg font-semibold text-gray-800">
                 {postUserData[post.user_id]?.nickname || postUserData[post.user_id]?.email || "Unknown"}
               </span>
             </div>
-            <div>
+            <div className="mb-4">
               <p className="text-gray-800">{post.comment}</p>
-              {post.imageUrl && <img src={post.imageUrl} alt="게시글 이미지" className="mt-2 rounded" />}
+              {post.imageUrl && (
+                <img
+                  src={post.imageUrl}
+                  alt="게시글 이미지"
+                  className="mt-4 rounded-lg"
+                />
+              )}
             </div>
-            <div className="text-gray-500 text-sm mt-2">
+            <div className="text-gray-500 text-sm mb-4">
               {new Date(post.created_at).toLocaleString()}
             </div>
-            <div className="flex justify-end mt-4 space-x-4">
+            <div className="flex justify-end space-x-4">
               <button
                 className="flex items-center text-gray-500 hover:text-blue-500 transition"
                 onClick={() => handleLike(post.id)}
               >
-                <ThumbUpIcon className="mr-1" /> 좋아요 {post.like || 0}
+                <ThumbUpIcon className="mr-1" /> 좋아요 {likes[post.id] || 0}
               </button>
               <button
                 className="flex items-center text-gray-500 hover:text-blue-500 transition"

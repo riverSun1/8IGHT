@@ -1,12 +1,19 @@
 "use client";
 
-import React, { useState, ChangeEvent, useEffect } from "react";
-import { Modal, Box, TextField, Button, IconButton } from "@mui/material";
+import React, { useState, useEffect, ChangeEvent } from "react";
+import {
+  Modal,
+  Box,
+  TextField,
+  Button,
+  IconButton,
+  Avatar,
+  Typography,
+} from "@mui/material";
 import { useFormik, FormikHelpers } from "formik";
 import * as yup from "yup";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
-import { useMutation } from "@tanstack/react-query";
-import { createClient } from "@/supabase/client";
+import axios from "axios";
 import { useAuth } from "@/contexts/auth.context";
 
 interface FormValues {
@@ -31,58 +38,38 @@ const PostModal: React.FC<PostModalProps> = ({
   refreshPosts,
 }) => {
   const { isLoggedIn, me, userData } = useAuth();
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
-  const supabase = createClient();
-
-  const mutation = useMutation({
-    mutationFn: async (values: FormValues) => {
-      let imageUrl = null;
-
-      if (selectedImage) {
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from("community-post-image")
-          .upload(`public/${selectedImage.name}`, selectedImage);
-
-        if (uploadError) throw uploadError;
-
-        imageUrl = uploadData?.path
-          ? supabase.storage
-              .from("community-post-image")
-              .getPublicUrl(uploadData.path).data?.publicUrl
-          : null;
-      }
-
-      const { data, error } = await supabase
-        .from("community_post")
-        .insert({
-          comment: values.postContent,
-          imageUrl,
-          user_id: me?.id,
-          like: 0,
-        })
-        .single();
-
-      if (error) throw error;
-
-      return data;
-    },
-    onSuccess: (data) => {
-      addPost(data);
-      setSuccessModalOpen(true);
-    },
-    onError: (error: any) => {
-      console.error("Error submitting the form", error);
-    },
-  });
-
   const formik = useFormik<FormValues>({
-    initialValues: { postContent: "" },
-    validationSchema,
-    onSubmit: (values, { setSubmitting }: FormikHelpers<FormValues>) => {
-      mutation.mutate(values);
+    initialValues: {
+      postContent: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: async (values, { setSubmitting }: FormikHelpers<FormValues>) => {
+      if (isLoggedIn) {
+        try {
+          const response = await axios.post("/api/auth/post", {
+            postContent: values.postContent,
+            image: selectedImage,
+            user_id: me?.id,
+          });
+
+          if (response.status === 200) {
+            if (response.data && response.data.length > 0) {
+              addPost(response.data[0]);
+            }
+            setSuccessModalOpen(true); // 성공 모달 열기
+          } else {
+            console.error("Error:", response.data.error);
+          }
+        } catch (error) {
+          console.error("Error submitting the form", error);
+        }
+      } else {
+        console.warn("로그인이 필요합니다.");
+      }
       setSubmitting(false);
     },
   });
@@ -98,7 +85,7 @@ const PostModal: React.FC<PostModalProps> = ({
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      setSelectedImage(event.target.files[0]);
+      setSelectedImage(URL.createObjectURL(event.target.files[0]));
     }
   };
 
@@ -125,10 +112,10 @@ const PostModal: React.FC<PostModalProps> = ({
     <>
       <Modal open={open} onClose={handleCancel}>
         <Box
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 rounded-lg shadow-lg w-[600px]"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-8 rounded-lg shadow-xl w-[600px]"
           style={{ minHeight: "600px" }}
         >
-          <form onSubmit={formik.handleSubmit} className="space-y-4">
+          <form onSubmit={formik.handleSubmit} className="space-y-6">
             <div className="flex justify-between items-center">
               <Button onClick={handleCancel} className="text-gray-500">
                 취소
@@ -146,17 +133,19 @@ const PostModal: React.FC<PostModalProps> = ({
               </Button>
             </div>
             <div className="flex items-center">
-              <img
+              <Avatar
                 src={userData?.imageUrl || "/images/profile-placeholder.png"}
                 alt="프로필"
-                className="w-10 h-10 rounded-full mr-2"
+                className="w-12 h-12 rounded-full mr-4"
               />
               {isLoggedIn ? (
-                <div className="text-gray-500">
+                <Typography className="text-gray-500">
                   {userData?.nickname || me?.email}
-                </div>
+                </Typography>
               ) : (
-                <div className="text-red-500">로그인이 필요합니다.</div>
+                <Typography className="text-red-500">
+                  로그인이 필요합니다.
+                </Typography>
               )}
             </div>
             <div className="border border-gray-300 rounded-lg p-4 space-y-4">
@@ -178,7 +167,7 @@ const PostModal: React.FC<PostModalProps> = ({
               {selectedImage && (
                 <div className="flex justify-center mb-4">
                   <img
-                    src={URL.createObjectURL(selectedImage)}
+                    src={selectedImage}
                     alt="Selected"
                     className="max-h-40 rounded-lg"
                   />
@@ -193,7 +182,9 @@ const PostModal: React.FC<PostModalProps> = ({
                 rows={6}
                 value={formik.values.postContent}
                 onChange={handleDescriptionChange}
-                InputProps={{ disableUnderline: true }}
+                InputProps={{
+                  disableUnderline: true,
+                }}
               />
             </div>
           </form>
