@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { useAuth } from "@/contexts/auth.context";
 import { fetchUserProfile, updateUserProfile } from "@/app/api/profile/route";
+import UserProfileImage from "@/components/UserProfile/UserProfileImage";
+import { useRouter } from "next/navigation";
 
 interface UserProfile {
   nickname: string;
@@ -17,6 +18,7 @@ export default function ProfilePage() {
   const { isLoggedIn, me } = useAuth();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -29,6 +31,12 @@ export default function ProfilePage() {
 
     fetchProfile();
   }, [me, isLoggedIn]);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push("/log-in");
+    }
+  }, [isLoggedIn, router]);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -65,31 +73,11 @@ export default function ProfilePage() {
     <div className="container mx-auto w-96 py-8">
       <div className="bg-white rounded-lg p-6">
         <h2 className="text-xl text-center font-bold mb-4">나의 프로필</h2>
-        <div className="flex justify-center items-center mb-6 relative">
-          <div className="relative w-40 h-40 items-center">
-            <Image
-              src={userProfile.imageUrl || "/default-profile.png"}
-              width={40}
-              height={40}
-              objectFit="cover"
-              alt="Profile"
-              className="rounded-full w-40 h-40"
-            />
-            {isEditing && (
-              <>
-                <div className="absolute top-0 left-0 w-full h-full bg-black opacity-20 rounded-full flex items-center justify-center hover:opacity-50">
-                  <span className="text-white text-sm">사진 편집</span>
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
-                />
-              </>
-            )}
-          </div>
-        </div>
+        <UserProfileImage
+          imageUrl={userProfile.imageUrl}
+          isEditing={isEditing}
+          onImageChange={handleImageChange}
+        />
         <div className="mb-4">
           <label className="block text-gray-500 text-sm font-bold mb-2">
             이름

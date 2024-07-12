@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     const { postContent, image, user_id } = data;
 
     const { data: insertedData, error } = await supabase
-      .from("community_post") // 테이블명을 community_post로 변경
+      .from("community_post")
       .insert([
         {
           comment: postContent,
@@ -36,7 +36,7 @@ export async function GET() {
 
   try {
     const { data, error } = await supabase
-      .from("community_post") // 테이블명을 community_post로 변경
+      .from("community_post")
       .select("*")
       .order("created_at", { ascending: false });
 
