@@ -66,10 +66,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
       email,
       password,
     };
-    const response = await fetch("http://localhost:3000/api/auth/log-in", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_DOMAIN + "/api/auth/log-in",
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+      }
+    );
     const user = await response.json();
     setMe(user);
     fetchUserData(user.id);
@@ -92,10 +95,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
       email,
       password,
     };
-    const response = await fetch("http://localhost:3000/api/auth/sign-up", {
-      method: "POST",
-      body: JSON.stringify(data),
-    });
+    const response = await fetch(
+      process.env.NEXT_PUBLIC_DOMAIN + "/api/auth/sign-up",
+      {
+        method: "POST",
+        body: JSON.stringify(data),
+      }
+    );
     const user = await response.json();
     setMe(user);
 
@@ -110,7 +116,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   // 로그아웃 함수
   const logOut: AuthContextValue["logOut"] = async () => {
     if (!me) return { status: 401, message: "로그인하고 눌러주세요." };
-    await fetch("http://localhost:3000/api/auth/log-out", {
+    await fetch(process.env.NEXT_PUBLIC_DOMAIN + "/api/auth/log-out", {
       method: "DELETE",
     });
     setMe(null);
@@ -118,14 +124,16 @@ export function AuthProvider({ children }: PropsWithChildren) {
   };
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/auth/me").then(async (response) => {
-      if (response.status === 200) {
-        const user = await response.json();
-        setMe(user);
-        fetchUserData(user.id);
+    fetch(process.env.NEXT_PUBLIC_DOMAIN + "api/auth/me").then(
+      async (response) => {
+        if (response.status === 200) {
+          const user = await response.json();
+          setMe(user);
+          fetchUserData(user.id);
+        }
+        setIsInitialized(true);
       }
-      setIsInitialized(true);
-    });
+    );
   }, []);
 
   const value = {
