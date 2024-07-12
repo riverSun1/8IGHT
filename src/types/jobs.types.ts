@@ -3,4 +3,5 @@ export type Jobs = {
   workRgnNmLst: string; // 위치
   recrutSeNm: string; // 신입 또는 경력 조건
   recrutPblntSn: number;
+  pbancBgngYmd: number;
 };
