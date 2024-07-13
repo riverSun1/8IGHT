@@ -183,7 +183,7 @@ const ResumePage = () => {
         </div>
       </div>
       <div className="mt-12" />
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 p-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 p-2 mt-12">
         <div className="m-0.5">
           <AddBtn />
         </div>
