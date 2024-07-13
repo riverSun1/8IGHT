@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
 import { createClient } from "@/supabase/server";
-
-const supabase = createClient();
+import { PostgrestError } from "@supabase/supabase-js";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
+  const supabase = createClient();
   try {
     const formData = await req.json();
     const { data, error } = await supabase.from("resumes").insert([formData]);
@@ -14,11 +14,13 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ data }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const err = error as PostgrestError;
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
 
 export async function PUT(req: Request) {
+  const supabase = createClient();
   try {
     const formData = await req.json();
     const { id, ...updateData } = formData;
@@ -33,6 +35,7 @@ export async function PUT(req: Request) {
 
     return NextResponse.json({ data }, { status: 200 });
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const err = error as PostgrestError;
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

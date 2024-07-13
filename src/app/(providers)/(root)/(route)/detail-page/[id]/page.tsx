@@ -16,9 +16,6 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
       } catch (error) {}
     },
   });
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   const uniqueArray = data?.result.steps.filter(
     (item, index, self) =>

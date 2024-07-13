@@ -3,7 +3,9 @@
 import { useAuth } from "@/contexts/auth.context";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import Link from "next/link";
 import { useRef, useState } from "react";
+import DetailPageModal from "./DetailPageModal";
 
 export type ApplyButtonProps = {
   email: string;
@@ -12,7 +14,9 @@ export type ApplyButtonProps = {
 const ApplyButton = () => {
   const { me } = useAuth();
   const [apply, setApply] = useState(true);
+  const [modal, setModal] = useState(false);
   const [files, setFiles] = useState([]);
+
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
 
@@ -50,7 +54,16 @@ const ApplyButton = () => {
   });
 
   const clickHandler = () => {
-    setApply(!apply);
+    if (!me) {
+      alert("로그인해주세요");
+      return;
+    } else {
+      setApply(!apply);
+    }
+  };
+
+  const ModalHandler = () => {
+    setModal(true);
   };
 
   return (
@@ -89,7 +102,7 @@ const ApplyButton = () => {
             </div>
             <div className=" flex justify-start items-center py-3 border-b">
               <p className=" text-xs text-slate-400 pr-6">이메일</p>
-              <p>{!me ? "로그인을 해 주세요" : me.email}</p>
+              <p>{me?.email}</p>
             </div>
             <div className="py-3 border-b">
               <label form="name" className=" text-xs text-slate-400 pr-6">
@@ -106,20 +119,29 @@ const ApplyButton = () => {
             <h2 className="font-semibold text-lg pt-4">첨부파일 선택</h2>
 
             <div>
-              {resumes.map((resume) => {
+              {resumes?.map((resume) => {
                 if (!resume) {
                   return;
                 }
                 return (
                   <div
                     key={resume.id}
-                    className="flex justify-start items-center border rounded-lg p-3 gap-2 mt-3"
+                    className="flex justify-start items-center border rounded-lg p-3 gap-3 mt-3  relative"
                   >
                     <input type="checkbox" />
-                    <div className="flex flex-col">
+                    <div className="flex flex-col gap-1 ">
                       <h3 className="text-sm">{resume.title}</h3>
+                      <button
+                        onClick={ModalHandler}
+                        className=" absolute right-0 pr-4 pt-2"
+                      >
+                        수정
+                      </button>
+                      {modal ? <DetailPageModal /> : <></>}
+
                       <div className="flex justify-between">
                         <p className="text-xs">{resume.name}</p>
+                        <span className="text-xs px-1"> | </span>
                         <p className="text-xs">
                           {resume.created_at.substr(0, 10).replace(/-/g, ".")}
                         </p>
@@ -129,10 +151,10 @@ const ApplyButton = () => {
                 );
               })}
             </div>
-            <div className="py-4">
-              <button className="w-full border rounded-lg py-2 text-blue-500 text-sm">
+            <div className="py-2 w-full  border rounded-lg my-3 text-center">
+              <Link href={"/resume"} className=" py-2 text-blue-500 text-sm ">
                 새 이력서 작성하기
-              </button>
+              </Link>
             </div>
             <h4 className="text-sm font-semibold text-slate-500 mb-2">
               지원 안내
