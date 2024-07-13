@@ -1,11 +1,9 @@
 "use client";
 
 import { useAuth } from "@/contexts/auth.context";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import Link from "next/link";
 import { useRef, useState } from "react";
-import DetailPageModal from "./DetailPageModal";
+import UserResumes from "./UserResumes";
 
 export type ApplyButtonProps = {
   email: string;
@@ -14,44 +12,9 @@ export type ApplyButtonProps = {
 const ApplyButton = () => {
   const { me } = useAuth();
   const [apply, setApply] = useState(true);
-  const [modal, setModal] = useState(false);
-  const [files, setFiles] = useState([]);
 
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
-
-  const { data: file } = useQuery({
-    queryKey: ["userFile"],
-    queryFn: async () => {
-      try {
-        const response = await axios.get("/api/detail-page/file", {
-          params: {
-            email: me?.email,
-          },
-        });
-        // setFiles(response.data);
-        return response.data;
-      } catch (error) {
-        console.log("error", error);
-      }
-    },
-  });
-
-  const { data: resumes } = useQuery({
-    queryKey: ["userResumes"],
-    queryFn: async () => {
-      try {
-        const response = await axios.get("/api/detail-page/resumes", {
-          params: {
-            email: me?.email,
-          },
-        });
-        console.log(response.data);
-        setFiles(response.data);
-        return response.data;
-      } catch (error) {}
-    },
-  });
 
   const clickHandler = () => {
     if (!me) {
@@ -60,10 +23,6 @@ const ApplyButton = () => {
     } else {
       setApply(!apply);
     }
-  };
-
-  const ModalHandler = () => {
-    setModal(true);
   };
 
   return (
@@ -77,7 +36,7 @@ const ApplyButton = () => {
         </button>
       ) : (
         <div className="w-80 border rounded-lg">
-          <div className=" border-b py-3">
+          <div className=" border-b py-4">
             <button onClick={clickHandler} className=" absolute pl-4">
               «
             </button>
@@ -85,10 +44,10 @@ const ApplyButton = () => {
           </div>
           <div className="p-3 min-h-[300px] max-h-[560px] overflow-y-auto ">
             <h2 className="font-semibold text-lg">지원 정보</h2>
-            <div className="py-3 border-b">
+            <div className=" flex justify-start items-center py-3 border-b">
               <label
                 form="name"
-                className=" text-xs text-slate-400 pr-6 tracking-widest"
+                className=" text-xs text-slate-400 pr-4 tracking-widest"
               >
                 이 름
               </label>
@@ -97,60 +56,27 @@ const ApplyButton = () => {
                 name="name"
                 id="name"
                 ref={nameRef}
-                className="focus:outline-none"
+                className="focus:outline-none text-sm w-8/12"
               />
             </div>
             <div className=" flex justify-start items-center py-3 border-b">
-              <p className=" text-xs text-slate-400 pr-6">이메일</p>
+              <p className=" text-xs text-slate-400 pr-4">이메일</p>
               <p>{me?.email}</p>
             </div>
-            <div className="py-3 border-b">
-              <label form="name" className=" text-xs text-slate-400 pr-6">
+            <div className="flex justify-start items-center py-3 border-b">
+              <label form="phon" className=" text-xs text-slate-400 pr-4  ">
                 연락처
               </label>
               <input
                 type="text"
-                name="name"
-                id="name"
-                className="focus:outline-none"
+                name="phon"
+                id="phon"
+                className="focus:outline-none w-8/12 text-sm "
                 ref={phoneRef}
               />
             </div>
-            <h2 className="font-semibold text-lg pt-4">첨부파일 선택</h2>
-
-            <div>
-              {resumes?.map((resume) => {
-                if (!resume) {
-                  return;
-                }
-                return (
-                  <div
-                    key={resume.id}
-                    className="flex justify-start items-center border rounded-lg p-3 gap-3 mt-3  relative"
-                  >
-                    <input type="checkbox" />
-                    <div className="flex flex-col gap-1 ">
-                      <h3 className="text-sm">{resume.title}</h3>
-                      <button
-                        onClick={ModalHandler}
-                        className=" absolute right-0 pr-4 pt-2"
-                      >
-                        수정
-                      </button>
-                      {modal ? <DetailPageModal /> : <></>}
-
-                      <div className="flex justify-between">
-                        <p className="text-xs">{resume.name}</p>
-                        <span className="text-xs px-1"> | </span>
-                        <p className="text-xs">
-                          {resume.created_at.substr(0, 10).replace(/-/g, ".")}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+            <h2 className="font-semibold text-lg pt-6">첨부파일 선택</h2>
+            <UserResumes />
             <div className="py-2 w-full  border rounded-lg my-3 text-center">
               <Link href={"/resume"} className=" py-2 text-blue-500 text-sm ">
                 새 이력서 작성하기
