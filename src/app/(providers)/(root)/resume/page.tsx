@@ -93,16 +93,29 @@ const ResumePage = () => {
   };
 
   const confirmUpload = async () => {
-    if (!selectedFile) return;
+    console.log("confirmUpload called");
+    if (!selectedFile) {
+      console.log("No file selected");
+      return;
+    }
 
-    const fileName = `${Date.now()}_${selectedFile.name}`;
+    console.log("File selected: ", selectedFile);
+
+    // 파일명을 Base64로 인코딩함
+    const fileName = `${Date.now()}_${btoa(
+      unescape(encodeURIComponent(selectedFile.name))
+    )}`;
+    console.log("Uploading file as: ", fileName);
+
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from("uploads")
       .upload(`public/${fileName}`, selectedFile);
 
     if (uploadError) {
-      console.error("Error uploading file:", uploadError);
+      console.error("Error uploading file:", uploadError.message);
     } else {
+      console.log("File uploaded successfully: ", uploadData);
+
       const fileURL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/uploads/${fileName}`;
       const { data: insertData, error: insertError } = await supabase
         .from("file_uploads")
@@ -116,8 +129,13 @@ const ResumePage = () => {
         .select();
 
       if (insertError) {
-        console.error("Error saving file URL to database:", insertError);
+        console.error(
+          "Error saving file URL to database:",
+          insertError.message
+        );
       } else if (insertData && insertData.length > 0) {
+        console.log("File URL saved to database: ", insertData);
+
         setWorkBoxes((prevBoxes) => [
           ...prevBoxes,
           {
@@ -141,6 +159,11 @@ const ResumePage = () => {
   const handleDownload = (id: string) => {
     const workBox = workBoxes.find((box) => box.id === id);
     if (workBox && workBox.fileURL) {
+      // 파일명을 Base64로 디코딩
+      const decodedFileName = decodeURIComponent(
+        escape(atob(workBox.fileURL.split("/").pop() || ""))
+      );
+      console.log("Downloading file: ", decodedFileName);
       window.open(workBox.fileURL, "_blank");
     }
   };
