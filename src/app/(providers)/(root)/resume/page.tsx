@@ -7,23 +7,19 @@ import { useEffect, useState } from "react";
 import AddBtn from "../../(auth)/_components/AddBtn";
 import FileButton from "../../(auth)/_components/FileButton";
 import WorkBox from "../../(auth)/_components/WorkBox";
+import { Tables } from "../../../../../types/supabase";
 import Modal from "../../_components/Modal";
 
-interface WorkBoxType {
-  id: string;
-  title: string;
-  email: string;
-  fileURL?: string;
-  file_name?: string | null;
-  created_at: string | null;
-}
+type ResumesType = Partial<Tables<"resumes">>;
+type FileUploadsType = Partial<Tables<"file_uploads">>;
+type WorkBoxType = ResumesType & FileUploadsType;
 
 const supabase = createClient();
 
 const ResumePage = () => {
   const { isLoggedIn, me } = useAuth();
   const router = useRouter();
-  const [workBoxes, setWorkBoxes] = useState<WorkBoxType[]>([]);
+  const [workBoxes, setWorkBoxes] = useState<any[]>([]);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

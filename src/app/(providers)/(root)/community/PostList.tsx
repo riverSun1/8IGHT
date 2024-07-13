@@ -4,7 +4,6 @@ import CommentIcon from "@mui/icons-material/Comment";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import React, { useEffect, useState } from "react";
 import { Database } from "../../../../../types/supabase";
-import CommentModal from "./CommentModal";
 
 type CommunityPost = Database["public"]["Tables"]["community_post"]["Row"];
 
@@ -99,7 +98,6 @@ export const PostList: React.FC<{ posts: CommunityPost[] }> = ({ posts }) => {
           >
             <div className="flex items-center mb-4">
               <img
-                src={postUserData[post.user_id]?.imageUrl || "/assets/images/profile-placeholder.png"}
                 src={
                   (post.user_id && postUserData[post.user_id]?.imageUrl) ||
                   "/images/profile-placeholder.png"
@@ -145,13 +143,13 @@ export const PostList: React.FC<{ posts: CommunityPost[] }> = ({ posts }) => {
           </div>
         ))
       )}
-      {commentModalOpen && (
+      {/* {commentModalOpen && (
         <CommentModal
           open={!!commentModalOpen}
           handleClose={handleCommentModalClose}
           postId={commentModalOpen}
         />
-      )}
+      )} */}
     </div>
   );
 };

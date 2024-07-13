@@ -1,7 +1,13 @@
 "use client";
 
 import { Box, Modal } from "@mui/material";
-import { createContext, PropsWithChildren, useContext, useState } from "react";
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 
 type ModalContextValue = {
   handleOpen: ({
@@ -23,22 +29,28 @@ const ModalContext = createContext<ModalContextValue>(initialValue);
 
 export const useCostumModal = () => useContext(ModalContext);
 
+type HandleOpenType = {
+  title?: string;
+  description?: string;
+  handleconfirmButtonClick?: () => void;
+};
+
 export function ModalProvider({ children }: PropsWithChildren) {
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+  const handleConfirmRef = useRef<(() => void) | null>(null);
 
   const value = {
     handleOpen: ({
       title = "",
       description = "",
-    }: {
-      title?: string;
-      description?: string;
-    }) => {
+      handleconfirmButtonClick,
+    }: HandleOpenType) => {
       setTitle(title);
       setDescription(description);
       setOpen(true);
+      handleConfirmRef.current = handleconfirmButtonClick || null;
     },
     handleClose: () => setOpen(false),
   };
@@ -58,6 +70,25 @@ export function ModalProvider({ children }: PropsWithChildren) {
           )}
           {description !== "" && (
             <p className="text-center mt-3">{description}</p>
+          )}
+          {handleConfirmRef.current && (
+            <div className="flex gap-3 mt-6 justify-end">
+              <button
+                className="py-2 px-4 rounded-md border border-neutral-300 bg-white hover:brightness-95 active:brightness-75"
+                onClick={value.handleClose}
+              >
+                아니오
+              </button>
+              <button
+                className="py-2 px-5 border rounded-md border-blue-600 bg-blue-600 text-white hover:brightness-95 active:brightness-75"
+                onClick={() => {
+                  handleConfirmRef.current!();
+                  setOpen(false);
+                }}
+              >
+                예
+              </button>
+            </div>
           )}
         </Box>
       </Modal>
