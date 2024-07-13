@@ -106,18 +106,23 @@ const NewResumePage = () => {
       newArray[index] = e.target.value;
       setFormData({ ...formData, [field]: newArray });
     } else {
-      if (e.target.name === "birth_date") {
-        const year = e.target.value.split("-")[0];
-        if (year.length > 4) {
-          return;
-        }
-      }
-
       setFormData({
         ...formData,
         [e.target.name]: e.target.value,
       });
     }
+  };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const parts = value.split("-");
+    if (parts[0].length > 4) {
+      parts[0] = parts[0].slice(0, 4);
+    }
+    setFormData({
+      ...formData,
+      birth_date: parts.join("-"),
+    });
   };
 
   const handleAddField = (field: keyof FormData) => {
@@ -210,7 +215,7 @@ const NewResumePage = () => {
                 type="date"
                 name="birth_date"
                 value={formData.birth_date ? formData.birth_date : ""}
-                onChange={handleChange}
+                onChange={handleDateChange}
                 className="w-full border border-gray-300 p-2 rounded mb-2"
                 required
               />
