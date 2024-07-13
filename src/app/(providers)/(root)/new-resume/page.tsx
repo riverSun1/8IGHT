@@ -66,6 +66,10 @@ const NewResumePage = () => {
     links: [""],
   });
 
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [selectedDay, setSelectedDay] = useState("");
+
   useEffect(() => {
     if (!isLoggedIn) {
       router.push("/log-in");
@@ -80,6 +84,13 @@ const NewResumePage = () => {
         if (error) {
           console.error("Error fetching resume:", error);
         } else {
+          const [year, month, day] = data.birth_date
+            ? data.birth_date.split("-")
+            : ["", "", ""];
+          setSelectedYear(year);
+          setSelectedMonth(month);
+          setSelectedDay(day);
+
           setFormData({
             ...data,
             career: Array.isArray(data.career) ? data.career : [""],
@@ -93,6 +104,21 @@ const NewResumePage = () => {
       fetchResume();
     }
   }, [id, isLoggedIn, router]);
+
+  const handleDateChange = (value: string, type: "year" | "month" | "day") => {
+    if (type === "year") {
+      setSelectedYear(value);
+    } else if (type === "month") {
+      setSelectedMonth(value);
+    } else if (type === "day") {
+      setSelectedDay(value);
+    }
+
+    setFormData((prevData) => ({
+      ...prevData,
+      birth_date: `${selectedYear}-${selectedMonth}-${selectedDay}`,
+    }));
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -111,18 +137,6 @@ const NewResumePage = () => {
         [e.target.name]: e.target.value,
       });
     }
-  };
-
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const parts = value.split("-");
-    if (parts[0].length > 4) {
-      parts[0] = parts[0].slice(0, 4);
-    }
-    setFormData({
-      ...formData,
-      birth_date: parts.join("-"),
-    });
   };
 
   const handleAddField = (field: keyof FormData) => {
@@ -148,10 +162,15 @@ const NewResumePage = () => {
       return;
     }
 
+    const birth_date = `${selectedYear}-${selectedMonth || "01"}-${
+      selectedDay || "01"
+    }`;
+
     const resumeData = {
       ...formData,
       id: formData.id || uuidv4(),
       email: me?.email,
+      birth_date,
     };
 
     try {
@@ -175,6 +194,21 @@ const NewResumePage = () => {
       console.error("Error submitting resume:", error);
     }
   };
+
+  const yearOptions = Array.from({ length: 100 }, (_, index) => ({
+    value: (2023 - index).toString(),
+    label: (2023 - index).toString(),
+  }));
+
+  const monthOptions = Array.from({ length: 12 }, (_, index) => ({
+    value: (index + 1).toString().padStart(2, "0"),
+    label: (index + 1).toString().padStart(2, "0"),
+  }));
+
+  const dayOptions = Array.from({ length: 31 }, (_, index) => ({
+    value: (index + 1).toString().padStart(2, "0"),
+    label: (index + 1).toString().padStart(2, "0"),
+  }));
 
   return (
     <div className="max-w-screen-2xl mx-auto bg-white p-6 rounded-lg shadow-sm">
@@ -205,20 +239,57 @@ const NewResumePage = () => {
                 value={formData.name ? formData.name : ""}
                 onChange={handleChange}
                 className="w-full border border-gray-300 p-2 rounded mb-2"
-                placeholder="이름"
+                placeholder="예) B8조"
                 required
               />
             </div>
             <div>
               <label className="block text-gray-700 mb-1">생년월일</label>
-              <input
-                type="date"
-                name="birth_date"
-                value={formData.birth_date ? formData.birth_date : ""}
-                onChange={handleDateChange}
-                className="w-full border border-gray-300 p-2 rounded mb-2"
-                required
-              />
+              <div className="flex space-x-2">
+                <select
+                  value={selectedYear}
+                  onChange={(e) => handleDateChange(e.target.value, "year")}
+                  className="w-full border border-gray-300 p-2 rounded mb-2 "
+                  required
+                >
+                  <option value="" disabled>
+                    년도
+                  </option>
+                  {yearOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => handleDateChange(e.target.value, "month")}
+                  className="w-full border border-gray-300 p-2 rounded mb-2 "
+                >
+                  <option value="" disabled>
+                    월
+                  </option>
+                  {monthOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={selectedDay}
+                  onChange={(e) => handleDateChange(e.target.value, "day")}
+                  className="w-full border border-gray-300 p-2 rounded mb-2 "
+                >
+                  <option value="" disabled>
+                    일
+                  </option>
+                  {dayOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div>
               <label className="block text-gray-700 mb-1">성별</label>
@@ -230,7 +301,7 @@ const NewResumePage = () => {
                 required
               >
                 <option value="" disabled>
-                  성별
+                  성별을 선택해주세요.
                 </option>
                 <option value="male">남성</option>
                 <option value="female">여성</option>
@@ -244,7 +315,7 @@ const NewResumePage = () => {
                 value={formData.email ? formData.email : ""}
                 onChange={handleChange}
                 className="w-full border border-gray-300 p-2 rounded mb-2"
-                placeholder="이메일"
+                placeholder="예) b08@jobnotice.com"
                 required
               />
             </div>
@@ -256,7 +327,7 @@ const NewResumePage = () => {
                 value={formData.phone ? formData.phone : ""}
                 onChange={handleChange}
                 className="w-full border border-gray-300 p-2 rounded mb-2"
-                placeholder="전화번호"
+                placeholder="예) 010-0808-0808"
                 required
               />
             </div>
@@ -268,7 +339,7 @@ const NewResumePage = () => {
                 value={formData.address ? formData.address : ""}
                 onChange={handleChange}
                 className="w-full border border-gray-300 p-2 rounded mb-2"
-                placeholder="주소"
+                placeholder="예) 서울시 비팔조구 잡노티스동"
                 required
               />
             </div>
