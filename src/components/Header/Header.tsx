@@ -1,20 +1,60 @@
 "use client";
 
+import DropDown, { DropDownData } from "@/app/(providers)/_components/DropDown";
 import BarsSvg from "@/app/(providers)/_components/icons/BarsSvg";
 import { useAuth } from "@/contexts/auth.context";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import logo from "../../../public/wanted_logo.jpg";
 import LoadingSpinner from "../Loading/LoadingSpinner";
 
 const Header = () => {
   const { me, isLoggedIn, logOut } = useAuth();
-  const [isOpen, setisOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const dropdownDatas: DropDownData[] = [
+    {
+      isLink: true,
+      text: "소셜",
+      href: "/community",
+    },
+    {
+      isLink: true,
+      text: "이력서",
+      href: "/resume",
+    },
+    ...(isLoggedIn
+      ? [
+          {
+            isLink: true,
+            text: "마이 페이지",
+            href: "/profile",
+          },
+          {
+            isLink: false,
+            text: "로그아웃",
+            onClickFunc: () => handleClickLogOut(),
+          },
+        ]
+      : [
+          {
+            isLink: true,
+            text: "회원가입",
+            href: "/sign-up",
+          },
+          {
+            isLink: true,
+            text: "로그인",
+            href: "/log-in",
+          },
+        ]),
+  ];
 
   const handleClickLogOut = async () => {
     logOut();
@@ -35,6 +75,22 @@ const Header = () => {
     };
   }, [pathname, router]);
 
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      dropdownRef.current &&
+      !dropdownRef.current.contains(event.target as Node)
+    ) {
+      setIsOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   return (
     <>
       {loading && <LoadingSpinner />}
@@ -45,10 +101,14 @@ const Header = () => {
           </Link>
           <div
             className="relative ml-auto cursor-pointer min-[500px]:hidden"
-            onClick={() => {}}
+            onClick={() => setIsOpen((prev) => !prev)}
           >
-            <div className={`absolute ${isOpen ? "hidden" : ""}`}></div>
             <BarsSvg width={22} height={22} color="#676767" />
+            <DropDown
+              datas={dropdownDatas}
+              isOpen={isOpen}
+              DropDownref={dropdownRef}
+            />
           </div>
           <div className="max-[500px]:hidden flex flex-row gap-5 mx-8">
             <div className="text-black font-bold hover:text-gray-400 transition-colors duration-300 cursor-pointer">

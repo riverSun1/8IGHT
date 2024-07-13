@@ -81,7 +81,10 @@ export function ModalProvider({ children }: PropsWithChildren) {
               </button>
               <button
                 className="py-2 px-5 border rounded-md border-blue-600 bg-blue-600 text-white hover:brightness-95 active:brightness-75"
-                onClick={() => handleConfirmRef.current!()}
+                onClick={() => {
+                  handleConfirmRef.current!();
+                  setOpen(false);
+                }}
               >
                 예
               </button>
