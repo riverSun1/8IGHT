@@ -36,7 +36,7 @@ const WorkBox: React.FC<WorkBoxProps> = ({
       </div>
       <div className="text-gray-500 mt-4">{date}</div>
       <div
-        className="absolute bottom-2 right-2 cursor-pointer"
+        className="absolute bottom-3 right-2 cursor-pointer"
         onClick={onDelete}
       >
         <Image

@@ -9,6 +9,7 @@ import FileButton from "../../(auth)/_components/FileButton";
 import WorkBox from "../../(auth)/_components/WorkBox";
 import { Tables } from "../../../../../types/supabase";
 import Modal from "../../_components/Modal";
+import Image from "next/image";
 
 type ResumesType = Partial<Tables<"resumes">>;
 type FileUploadsType = Partial<Tables<"file_uploads">>;
@@ -170,7 +171,18 @@ const ResumePage = () => {
 
   return (
     <div className="p-6 container mx-auto max-w-[1400px]">
-      <h1 className="text-start text-2xl font-bold mb-5">이력서</h1>
+      <div className="mt-3 flex justify-center">
+        <div className="w-full max-w-[1200px]">
+          <Image
+            src="/resume-banner.png"
+            alt="이력서 작성 배너"
+            width={1000}
+            height={103}
+            layout="responsive"
+          />
+        </div>
+      </div>
+      <div className="mt-12" />
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 p-2">
         <div className="m-0.5">
           <AddBtn />
