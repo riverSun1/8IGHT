@@ -100,7 +100,7 @@ const Header = () => {
             <Image src={logo} alt="logo" width={150} height={90} />
           </Link>
           <div
-            className="relative ml-auto cursor-pointer min-[500px]:hidden"
+            className="relative ml-auto cursor-pointer min-[551px]:hidden"
             onClick={() => setIsOpen((prev) => !prev)}
           >
             <BarsSvg width={22} height={22} color="#676767" />
@@ -110,7 +110,7 @@ const Header = () => {
               DropDownref={dropdownRef}
             />
           </div>
-          <div className="max-[500px]:hidden flex flex-row gap-5 mx-8">
+          <div className="max-[550px]:hidden flex flex-row gap-5 mx-8">
             <div className="text-black font-bold hover:text-gray-400 transition-colors duration-300 cursor-pointer">
               <Link href="/community">소셜</Link>
             </div>
@@ -118,7 +118,7 @@ const Header = () => {
               <Link href="/resume">이력서</Link>
             </div>
           </div>
-          <div className="max-[500px]:hidden flex flex-row gap-3 ml-auto">
+          <div className="max-[550px]:hidden flex flex-row gap-3 ml-auto">
             {isLoggedIn ? (
               <>
                 <div className="border p-2 border-gray-300 rounded-md text-blue-500 font-bold hover:bg-gray-100 transition-colors duration-300 cursor-pointer">
