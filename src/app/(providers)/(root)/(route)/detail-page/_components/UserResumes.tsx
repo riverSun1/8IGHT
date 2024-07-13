@@ -11,8 +11,8 @@ const UserResumes = () => {
   const { me } = useAuth();
   const { handleOpen } = useCostumModal();
   const router = useRouter();
-  const [checkbox, setCheckbox] = useState(false);
-  const [userResumes, setUserResumes] = useState([]);
+  const [checkbox, setCheckbox] = useState<boolean>(false);
+  const [userResumes, setUserResumes] = useState<any[]>([]);
 
   //supabase 파일형태 이력서 가져오기
   const { data: files, error: filesError } = useQuery({
