@@ -275,7 +275,7 @@ const NewResumePage = () => {
             name="personalInfo"
             value={formData.personalInfo ? formData.personalInfo : ""}
             onChange={handleChange}
-            className="w-full border border-gray-300 p-2 rounded"
+            className="w-full border border-gray-300 p-2 rounded resize-none"
             placeholder="본인의 업무 경험을 기반으로 핵심역량과 업무 스킬을 간단히 작성해주세요. 3-5줄로 요약하여 작성하는 것을 추천합니다!"
           />
         </Section>
@@ -287,7 +287,7 @@ const NewResumePage = () => {
                 key={index}
                 value={career}
                 onChange={(e) => handleChange(e, index, "career")}
-                className="w-full border border-gray-300 p-2 rounded mb-2"
+                className="w-full border border-gray-300 p-2 rounded mb-2 resize-none"
                 placeholder="담당하신 업무 중 우선순위가 높은 업무를 선별하여 최신순으로 작성해주세요. 신입의 경우, 직무와 관련된 대외활동, 인턴, 계약직 경력 등이 있다면 작성해주세요. 업무 또는 활동 시 담당했던 역할과 과정, 성과에 대해 자세히 작성해주세요. 업무 성과는 되도록 구체적인 숫자 혹은 %로 표현해주세요! 커리어 조회 후 기업명이 실제와 다른 경우, 부서명/직책 란에 원하시는 기업명을 작성해주세요."
               />
             ))}
@@ -307,7 +307,7 @@ const NewResumePage = () => {
                 key={index}
                 value={edu}
                 onChange={(e) => handleChange(e, index, "education")}
-                className="w-full border border-gray-300 p-2 rounded mb-2"
+                className="w-full border border-gray-300 p-2 rounded mb-2 resize-none"
                 placeholder="최신순으로 학력을 작성해주세요."
               />
             ))}
@@ -327,7 +327,7 @@ const NewResumePage = () => {
                 key={index}
                 value={skill}
                 onChange={(e) => handleChange(e, index, "skills")}
-                className="w-full border border-gray-300 p-2 rounded mb-2"
+                className="w-full border border-gray-300 p-2 rounded mb-2 resize-none"
                 placeholder="개발 스택, 디자인 툴, 마케팅 툴 등 가지고 있는 직무와 관련된 스킬을 추가해보세요. 데이터 분석 툴이나 협업 툴 등의 사용해본 경험이 있으신 툴들도 추가해보세요."
               />
             ))}
@@ -347,7 +347,7 @@ const NewResumePage = () => {
                 key={index}
                 value={award}
                 onChange={(e) => handleChange(e, index, "awards")}
-                className="w-full border border-gray-300 p-2 rounded mb-2"
+                className="w-full border border-gray-300 p-2 rounded mb-2 resize-none"
                 placeholder="수상 이력, 직무 관련 자격증, 수료한 교육이나 참석한 외부활동 등이 있다면 간략히 작성해주세요. 지원하는 회사에서 요구하는 경우가 아니라면 운전면허증과 같은 자격증은 생략하는 것이 좋습니다!"
               />
             ))}
