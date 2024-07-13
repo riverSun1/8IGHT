@@ -1,15 +1,17 @@
 "use client";
 
+import BarsSvg from "@/app/(providers)/_components/icons/BarsSvg";
 import { useAuth } from "@/contexts/auth.context";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
-import LoadingSpinner from "../Loading/LoadingSpinner";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import logo from "../../../public/wanted_logo.jpg";
+import LoadingSpinner from "../Loading/LoadingSpinner";
 
 const Header = () => {
   const { me, isLoggedIn, logOut } = useAuth();
+  const [isOpen, setisOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -41,7 +43,14 @@ const Header = () => {
           <Link href="/" className="text-lg font-bold">
             <Image src={logo} alt="logo" width={150} height={90} />
           </Link>
-          <div className="flex flex-row gap-3 mx-2">
+          <div
+            className="relative ml-auto cursor-pointer min-[500px]:hidden"
+            onClick={() => {}}
+          >
+            <div className={`absolute ${isOpen ? "hidden" : ""}`}></div>
+            <BarsSvg width={22} height={22} color="#676767" />
+          </div>
+          <div className="max-[500px]:hidden flex flex-row gap-3 mx-2">
             <div className="border p-2 border-gray-300 rounded-md text-blue-500 font-bold hover:bg-gray-100 transition-colors duration-300 cursor-pointer">
               <Link href="/community">소셜</Link>
             </div>
@@ -49,7 +58,7 @@ const Header = () => {
               <Link href="/resume">이력서</Link>
             </div>
           </div>
-          <div className="flex flex-row gap-3 ml-auto">
+          <div className="max-[500px]:hidden flex flex-row gap-3 ml-auto">
             {isLoggedIn ? (
               <>
                 <div className="border p-2 border-gray-300 rounded-md text-blue-500 font-bold hover:bg-gray-100 transition-colors duration-300 cursor-pointer">
