@@ -106,7 +106,7 @@ const NewResumePage = () => {
       newArray[index] = e.target.value;
       setFormData({ ...formData, [field]: newArray });
     } else {
-      if (e.target.name === "birth_data") {
+      if (e.target.name === "birth_date") {
         const year = e.target.value.split("-")[0];
         if (year.length > 4) {
           return;
@@ -239,7 +239,7 @@ const NewResumePage = () => {
                 value={formData.email ? formData.email : ""}
                 onChange={handleChange}
                 className="w-full border border-gray-300 p-2 rounded mb-2"
-                placeholder="ex) b08@job-notice.com"
+                placeholder="이메일"
                 required
               />
             </div>
@@ -251,7 +251,7 @@ const NewResumePage = () => {
                 value={formData.phone ? formData.phone : ""}
                 onChange={handleChange}
                 className="w-full border border-gray-300 p-2 rounded mb-2"
-                placeholder="ex) 010-8888-8888"
+                placeholder="전화번호"
                 required
               />
             </div>

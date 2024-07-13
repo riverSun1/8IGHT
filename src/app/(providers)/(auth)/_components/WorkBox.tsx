@@ -12,6 +12,7 @@ interface WorkBoxProps {
   onEdit?: () => void;
   onTitleClick?: () => void;
   isFileUpload: boolean;
+  fileURL?: string; // 파일 url추가
 }
 
 const WorkBox: React.FC<WorkBoxProps> = ({
@@ -22,6 +23,7 @@ const WorkBox: React.FC<WorkBoxProps> = ({
   onEdit,
   onTitleClick,
   isFileUpload,
+  fileURL, // 파일 url 추가
 }) => {
   const router = useRouter();
 
