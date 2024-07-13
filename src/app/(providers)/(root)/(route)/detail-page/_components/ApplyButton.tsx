@@ -11,7 +11,7 @@ export type ApplyButtonProps = {
 
 const ApplyButton = () => {
   const { me } = useAuth();
-  const [apply, setApply] = useState(false);
+  const [apply, setApply] = useState(true);
   const [files, setFiles] = useState([]);
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
@@ -25,7 +25,7 @@ const ApplyButton = () => {
             email: me?.email,
           },
         });
-        setFiles(response.data);
+        // setFiles(response.data);
         return response.data;
       } catch (error) {
         console.log("error", error);
@@ -33,16 +33,16 @@ const ApplyButton = () => {
     },
   });
 
-  // 현재 로그인 된 user Email하고 supabase Email이 같은 이력사만 가져오기
   const { data: resumes } = useQuery({
     queryKey: ["userResumes"],
     queryFn: async () => {
       try {
-        const response = await axios.get("/api/detail-page/resume", {
+        const response = await axios.get("/api/detail-page/resumes", {
           params: {
             email: me?.email,
           },
         });
+        console.log(response.data);
         setFiles(response.data);
         return response.data;
       } catch (error) {}
@@ -104,6 +104,31 @@ const ApplyButton = () => {
               />
             </div>
             <h2 className="font-semibold text-lg pt-4">첨부파일 선택</h2>
+
+            <div>
+              {resumes.map((resume) => {
+                if (!resume) {
+                  return;
+                }
+                return (
+                  <div
+                    key={resume.id}
+                    className="flex justify-start items-center border rounded-lg p-3 gap-2 mt-3"
+                  >
+                    <input type="checkbox" />
+                    <div className="flex flex-col">
+                      <h3 className="text-sm">{resume.title}</h3>
+                      <div className="flex justify-between">
+                        <p className="text-xs">{resume.name}</p>
+                        <p className="text-xs">
+                          {resume.created_at.substr(0, 10).replace(/-/g, ".")}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
             <div className="py-4">
               <button className="w-full border rounded-lg py-2 text-blue-500 text-sm">
                 새 이력서 작성하기
