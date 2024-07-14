@@ -134,7 +134,9 @@ const PostModal: React.FC<PostModalProps> = ({
             </div>
             <div className="flex items-center">
               <Avatar
-                src={userData?.imageUrl || "/assets/images/profile-placeholder.png"}
+                src={
+                  userData?.imageUrl || "/assets/images/profile-placeholder.png"
+                }
                 alt="프로필"
                 className="w-12 h-12 rounded-full mr-4"
               />

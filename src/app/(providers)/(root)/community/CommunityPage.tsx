@@ -1,16 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import SideBar from "./SideBar";
-import PostModal from "./PostModal";
-import PostList from "./PostList";
 import { createClient } from "@/supabase/client";
 import { Database } from "@/supabase/types";
 import { useQuery } from "@tanstack/react-query";
+import PostList from "./PostList";
+import PostModal from "./PostModal";
+import SideBar from "./SideBar";
 
 const CommunityPage: React.FC = () => {
   const supabase = createClient();
-  const { data: posts, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["posts"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -24,19 +24,30 @@ const CommunityPage: React.FC = () => {
     },
   });
 
+  const [posts, setPosts] = useState<
+    Database["public"]["Tables"]["community_post"]["Row"][]
+  >([]);
   const [postModalOpen, setPostModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (data) {
+      setPosts(data);
+    }
+  }, [data]);
 
   const handlePostOpen = () => setPostModalOpen(true);
   const handlePostClose = () => setPostModalOpen(false);
 
-  const addPost = (post: Database["public"]["Tables"]["community_post"]["Row"]) => {
+  const addPost = (
+    post: Database["public"]["Tables"]["community_post"]["Row"]
+  ) => {
     refetch();
   };
 
   return (
     <div className="min-h-screen bg-white">
       <div className="flex justify-center">
-        <div className="flex w-full max-w-7xl border border-gray-300">
+        <div className="flex w-full max-w-5xl">
           <SideBar />
           <main className="flex-1 p-4 bg-white h-screen overflow-hidden border-l border-gray-300">
             <div className="sticky top-0 z-10 bg-white">
@@ -60,7 +71,7 @@ const CommunityPage: React.FC = () => {
               {isLoading ? (
                 <p>Loading...</p>
               ) : (
-                <PostList posts={posts} />
+                <PostList posts={posts} setPosts={setPosts} />
               )}
             </div>
           </main>

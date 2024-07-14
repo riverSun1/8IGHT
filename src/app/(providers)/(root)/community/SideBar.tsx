@@ -11,21 +11,25 @@ const SideBar = () => {
   };
 
   return (
-    <aside className="w-1/4 p-6 bg-white border-r border-gray-300 h-screen flex flex-col items-center">
-      <div className="flex flex-col items-center py-6 border-b border-gray-300">
-        <img
-          src={userData?.imageUrl || "/assets/images/profile-placeholder.png"}
-          alt="프로필"
-          className="w-24 h-24 rounded-full mb-4"
-        />
+    <aside className="w-1/4 bg-white border-r border-gray-300 h-screen flex flex-col items-center">
+      <div className="flex flex-col items-center py-8 border-b border-gray-300">
+        <Link href="/profile">
+          <img
+            src={userData?.imageUrl || "/assets/images/profile-placeholder.png"}
+            alt="프로필"
+            className="w-15 h-12 rounded-full mb-4 cursor-pointer"
+          />
+        </Link>
         {isLoggedIn ? (
           <>
-            <span className="text-lg font-semibold text-blue-500 mb-2">
-              {userData?.nickname || me?.email}
-            </span>
+            <Link href="/profile">
+              <span className="text-lg font-semibold text-blue-500 mb-2 cursor-pointer">
+                {userData?.nickname || me?.email}
+              </span>
+            </Link>
             <button
               onClick={handleClickLogOut}
-              className="text-sm font-semibold text-blue-500"
+              className="h-11 text-sm font-semibold text-blue-500"
             >
               로그아웃
             </button>
