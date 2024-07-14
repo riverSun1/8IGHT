@@ -1,4 +1,4 @@
-import { createClient } from "@/supabase/client";
+import { createClient } from "@/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export type UserProfile = {
