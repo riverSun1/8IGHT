@@ -94,7 +94,12 @@ const EditPostModal: React.FC<EditPostModalProps> = ({
       if (updateError) {
         console.error("Error updating post:", updateError);
       } else {
-        onPostUpdated(updatedPost);
+        const formattedPost = {
+          ...updatedPost,
+          user_id: updatedPost.user_id || "", // user_id가 null인 경우 빈 문자열로 처리
+          created_at: updatedPost.created_at || "", // created_at이 null인 경우 빈 문자열로 처리
+        };
+        onPostUpdated(formattedPost as Database["public"]["Tables"]["community_post"]["Row"]);
         alert("수정 되었습니다!");
         handleClose();
       }

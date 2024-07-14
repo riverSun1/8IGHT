@@ -26,6 +26,40 @@ export interface Database {
           imageUrl?: string | null;
         };
       };
+      post_likes: {
+        Row: {
+          post_id: string;
+          user_id: string;
+        };
+        Insert: {
+          post_id: string;
+          user_id: string;
+        };
+        Update: {
+          post_id?: string;
+          user_id?: string;
+        };
+      };
+      users: {
+        Row: {
+          id: string;
+          nickname: string | null;
+          email: string | null;
+          imageUrl: string | null;
+        };
+        Insert: {
+          id?: string;
+          nickname?: string | null;
+          email?: string | null;
+          imageUrl?: string | null;
+        };
+        Update: {
+          id?: string;
+          nickname?: string | null;
+          email?: string | null;
+          imageUrl?: string | null;
+        };
+      };
     };
     Views: {
       [_ in never]: never;

@@ -25,15 +25,21 @@ const CommunityPage: React.FC = () => {
   });
 
   const [posts, setPosts] = useState<
-    Database["public"]["Tables"]["community_post"]["Row"][]
+    (Database["public"]["Tables"]["community_post"]["Row"] & { like: number | null })[]
   >([]);
-  const [postModalOpen, setPostModalOpen] = useState(false);
 
   useEffect(() => {
     if (data) {
-      setPosts(data);
+      const formattedData = data.map((post) => ({
+        ...post,
+        user_id: post.user_id || "", 
+        created_at: post.created_at || "", 
+      }));
+      setPosts(formattedData);
     }
   }, [data]);
+
+  const [postModalOpen, setPostModalOpen] = useState(false);
 
   const handlePostOpen = () => setPostModalOpen(true);
   const handlePostClose = () => setPostModalOpen(false);
