@@ -28,8 +28,8 @@ export default function ProfilePage() {
       if (!me) return;
       const profile = await fetchUserProfile(me.id);
       if (profile) {
-        setUserProfile(profile);
-        setInitialProfile(profile);
+        setUserProfile(profile as UserProfile);
+        setInitialProfile(profile as UserProfile);
       }
     };
 

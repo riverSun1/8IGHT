@@ -16,11 +16,8 @@ export const fetchUserProfile = async (userId: string) => {
     .eq("id", userId!)
     .single();
 
-<<<<<<< HEAD
-=======
-  const profile = response.data;
-  const profileError = response.error;
->>>>>>> 41f83c357c107855cb508bf573c3ca65a2544521
+  // const profile = response.data;
+  // const profileError = response.error;
   if (profileError) {
     console.error(profileError);
     return null;
