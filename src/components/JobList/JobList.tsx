@@ -208,7 +208,7 @@ const JobList = () => {
         ))}
       </ul>
       <div ref={ref} className="flex justify-center pt-4">
-        {inView && (
+        {inView ? (
           <Image
             className="spin"
             src={loading}
@@ -217,7 +217,7 @@ const JobList = () => {
             height={40}
             priority={true}
           />
-        )}
+        ) : null}
       </div>
     </div>
   );
