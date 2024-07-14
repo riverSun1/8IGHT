@@ -213,7 +213,6 @@ const NewResumePage = () => {
   return (
     <div className="max-w-screen-2xl mx-auto bg-white p-6 rounded-lg shadow-sm">
       <h1 className="text-2xl font-bold mb-4">
-        {/* {id ? "이력서 수정" : "새 이력서 작성"} -  */}
         기업에게 나에 대해 알려줍시다. 강점, 목표, 관심분야도 좋아요😊
       </h1>
       <form onSubmit={handleSubmit} className="space-y-6">
