@@ -208,8 +208,8 @@ const ResumePage = () => {
               date={box.created_at?.split("T")[0] || ""}
               onDelete={() => handleDelete(box.id, box.fileURL)}
               onEdit={() => handleEdit(box.id)}
-              onTitleClick={() => handleDownload(box.id)}
               isFileUpload={!!box.fileURL}
+              fileURL={box.fileURL}
             />
           </div>
         ))}
