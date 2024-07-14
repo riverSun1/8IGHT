@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import logo from "../../../../../public/wanted_logo.jpg";
+import logo from "../../../../../public/main_logo.png";
 
 function AuthHeader() {
   return (

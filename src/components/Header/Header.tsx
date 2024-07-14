@@ -7,7 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import logo from "../../../public/wanted_logo.jpg";
+import logo from "../../../public/main_logo.png";
 import LoadingSpinner from "../Loading/LoadingSpinner";
 
 const Header = () => {
@@ -97,7 +97,7 @@ const Header = () => {
       <header className="border-b border-gray-300">
         <div className="container mx-auto max-w-[1400px] px-5 h-16 flex items-center">
           <Link href="/" className="text-lg font-bold">
-            <Image src={logo} alt="logo" width={150} height={90} />
+            <Image src={logo} alt="logo" width={120} height={80} />
           </Link>
           <div
             className="relative ml-auto cursor-pointer min-[500px]:hidden"
