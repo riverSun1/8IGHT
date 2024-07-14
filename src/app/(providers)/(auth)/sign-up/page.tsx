@@ -1,7 +1,8 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { useAuth } from "@/contexts/auth.context";
+import { useLoading } from "@/contexts/loading.context";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import AuthButton from "../_components/Button";
 import ArrowLeftSvg from "../_components/icons/ArrowLeftSvg";
 import AuthInput from "../_components/Input";
@@ -29,6 +30,7 @@ function SignUpPage() {
     isChecked
       ? true
       : false;
+  const { openLoading, closeLoading } = useLoading();
   const handleCheck: handleCheckType = (successBoolean) => {
     setIsPhoneCheckSuccess(successBoolean);
   };
@@ -38,9 +40,16 @@ function SignUpPage() {
     }
     const response = await signUp(email, password);
     if (response.status) {
+      openLoading();
       return signUpRouter.replace("/");
     }
   };
+
+  useEffect(() => {
+    return () => {
+      closeLoading();
+    };
+  }, []);
   return (
     <>
       <button

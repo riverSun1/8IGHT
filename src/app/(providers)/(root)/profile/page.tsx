@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useAuth } from "@/contexts/auth.context";
 import UserProfileImage from "@/components/UserProfile/UserProfileImage";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth.context";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface UserProfile {
   nickname: string;
