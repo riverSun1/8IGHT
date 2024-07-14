@@ -353,7 +353,7 @@ const PostList: React.FC<PostListProps> = ({ posts, setPosts }) => {
             ]
           }
         />
-      )} */}
+      )} 
     </div>
   );
 };
