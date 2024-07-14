@@ -12,13 +12,11 @@ const DetailPage = ({ params }: { params: { id: string } }) => {
       try {
         const response = await axios.get(`/api/detail-page/${params.id}`);
         const data: jobDetailType = response.data;
+        console.log(data);
         return data;
       } catch (error) {}
     },
   });
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   const uniqueArray = data?.result.steps.filter(
     (item, index, self) =>
