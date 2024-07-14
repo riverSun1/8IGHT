@@ -1,4 +1,5 @@
 // "use client";
+// "use client";
 
 // import React, { useState, ChangeEvent } from "react";
 // import { Modal, Box, TextField, Button } from "@mui/material";
@@ -11,11 +12,22 @@
 // interface FormValues {
 //   commentContent: string;
 // }
+// interface FormValues {
+//   commentContent: string;
+// }
 
 // const validationSchema = yup.object({
 //   commentContent: yup.string().required("내용을 입력해 주세요"),
 // });
+// const validationSchema = yup.object({
+//   commentContent: yup.string().required("내용을 입력해 주세요"),
+// });
 
+// interface CommentModalProps {
+//   open: boolean;
+//   handleClose: () => void;
+//   postId: string;
+// }
 // interface CommentModalProps {
 //   open: boolean;
 //   handleClose: () => void;
@@ -31,7 +43,17 @@
 //   const queryClient = useQueryClient();
 //   const [confirmCancel, setConfirmCancel] = useState(false);
 //   const [successModalOpen, setSuccessModalOpen] = useState(false);
+// const CommentModal: React.FC<CommentModalProps> = ({
+//   open,
+//   handleClose,
+//   postId,
+// }) => {
+//   const { isLoggedIn, me, userData } = useAuth();
+//   const queryClient = useQueryClient();
+//   const [confirmCancel, setConfirmCancel] = useState(false);
+//   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
+//   const supabase = createClient();
 //   const supabase = createClient();
 
 //   const mutation = useMutation({
@@ -44,7 +66,18 @@
 //           user_id: me?.id,
 //         })
 //         .single();
+//   const mutation = useMutation({
+//     mutationFn: async (values: FormValues) => {
+//       const { data, error } = await supabase
+//         .from("comments")
+//         .insert({
+//           content: values.commentContent,
+//           post_id: postId,
+//           user_id: me?.id,
+//         })
+//         .single();
 
+//       if (error) throw error;
 //       if (error) throw error;
 
 //       return data;
@@ -66,7 +99,18 @@
 //       setSubmitting(false);
 //     },
 //   });
+//   const formik = useFormik<FormValues>({
+//     initialValues: { commentContent: "" },
+//     validationSchema,
+//     onSubmit: (values, { setSubmitting }: FormikHelpers<FormValues>) => {
+//       mutation.mutate(values);
+//       setSubmitting(false);
+//     },
+//   });
 
+//   const handleDescriptionChange = (event: ChangeEvent<HTMLInputElement>) => {
+//     formik.handleChange(event);
+//   };
 //   const handleDescriptionChange = (event: ChangeEvent<HTMLInputElement>) => {
 //     formik.handleChange(event);
 //   };
@@ -74,7 +118,13 @@
 //   const handleCancel = () => {
 //     setConfirmCancel(true);
 //   };
+//   const handleCancel = () => {
+//     setConfirmCancel(true);
+//   };
 
+//   const confirmCancelClose = () => {
+//     setConfirmCancel(false);
+//   };
 //   const confirmCancelClose = () => {
 //     setConfirmCancel(false);
 //   };
@@ -83,7 +133,15 @@
 //     setConfirmCancel(false);
 //     handleClose();
 //   };
+//   const confirmCancelExit = () => {
+//     setConfirmCancel(false);
+//     handleClose();
+//   };
 
+//   const handleSuccessClose = () => {
+//     setSuccessModalOpen(false);
+//     handleClose();
+//   };
 //   const handleSuccessClose = () => {
 //     setSuccessModalOpen(false);
 //     handleClose();

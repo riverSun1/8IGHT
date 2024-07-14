@@ -42,6 +42,10 @@ export interface jobDetailType {
         recrutStepSn: number;
         recrutPblntSn: number;
         recrutPbancTtl: string;
+        recrutNope: null;
+        aplyNope: null;
+        cmpttRt: null;
+        rsnOcrnYmd: null;
         sortNo: number;
         minStepSn: number;
         maxStepSn: number;

@@ -1,4 +1,4 @@
-import { createClient } from "@/supabase/client";
+import { createClient } from "@/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export type UserProfile = {
@@ -18,10 +18,10 @@ export const GET = async (request: NextRequest): Promise<NextResponse> => {
   const response = await supabase
     .from("users")
     .select("nickname, imageUrl, position, job, career")
-    .eq("id", userId)
+    .eq("id", userId!)
     .single();
 
-  const profile: UserProfile | null = response.data;
+  const profile = response.data;
   const profileError = response.error;
   if (profileError) {
     return NextResponse.json(null);
