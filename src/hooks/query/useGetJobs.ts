@@ -9,11 +9,17 @@ type JobResponse = {
   hasNextPage: boolean;
 };
 
-export const useGetJobs = () => {
+interface Params {
+  job?: string;
+  edu?: string;
+  location?: string;
+}
+
+export const useGetJobs = ({ job, edu, location }: Params) => {
   const { data, fetchNextPage, hasNextPage, isFetching, error } =
     useInfiniteQuery<JobResponse, Error>({
-      queryKey: ["Job"],
-      queryFn: ({ pageParam = 1 }) => fetchJobs(pageParam),
+      queryKey: ["Job", { job, edu, location }], // 옵션은 객체로, home이랑 key 다른거임.
+      queryFn: ({ pageParam = 1 }) => fetchJobs(pageParam, job, edu, location),
       initialPageParam: 1,
       staleTime: 300000,
 

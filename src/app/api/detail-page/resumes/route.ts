@@ -6,6 +6,7 @@ export const GET: (request: NextRequest) => Promise<NextResponse> = async (
 ) => {
   const supabase = createClient();
   const email = request.nextUrl.searchParams.get("email");
+  console.log("email", request.nextUrl.searchParams.get("email"));
   if (!email) {
     return NextResponse.json({ error: "Email is required" }, { status: 400 });
   }
