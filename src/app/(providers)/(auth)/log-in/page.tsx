@@ -53,7 +53,7 @@ function LoginPage() {
         />
         <div className="w-full mt-5">
           <AuthButton onClick={handleClickLogIn} isAllOk={isAllOkay}>
-            가입하기
+            로그인
           </AuthButton>
         </div>
         <div className="relative py-4">

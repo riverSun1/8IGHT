@@ -9,6 +9,7 @@ import FileButton from "../../(auth)/_components/FileButton";
 import WorkBox from "../../(auth)/_components/WorkBox";
 import { Tables } from "../../../../../types/supabase";
 import Modal from "../../_components/Modal";
+import Image from "next/image";
 
 type ResumesType = Partial<Tables<"resumes">>;
 type FileUploadsType = Partial<Tables<"file_uploads">>;
@@ -24,6 +25,7 @@ const ResumePage = () => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
+  const [selectedFileURL, setSelectedFileURL] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -62,27 +64,51 @@ const ResumePage = () => {
     }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: string, fileURL: string | null = null) => {
     setSelectedBoxId(id);
+    setSelectedFileURL(fileURL);
     setIsDeleteModalOpen(true);
   };
 
   const confirmDelete = async () => {
     if (selectedBoxId) {
-      const { error } = await supabase
-        .from("resumes")
+      let error = null;
+
+      if (selectedFileURL) {
+        const fileName = selectedFileURL.split("/").pop();
+        console.log("fileName => ", fileName);
+
+        const { error: deleteFileError } = await supabase.storage
+          .from("uploads")
+          .remove([`public/${fileName}`]);
+
+        if (deleteFileError) {
+          console.error("Error deleting file from storage:", deleteFileError);
+          error = deleteFileError;
+        }
+      }
+
+      const { error: deleteFileUploadError } = await supabase
+        .from("file_uploads")
         .delete()
         .eq("id", selectedBoxId);
 
-      if (error) {
-        console.error("Error deleting resume:", error);
-      } else {
+      if (deleteFileUploadError) {
+        console.error(
+          "Error deleting file upload record:",
+          deleteFileUploadError
+        );
+        error = deleteFileUploadError;
+      }
+
+      if (!error) {
         const newWorkBoxes = workBoxes.filter(
           (box) => box.id !== selectedBoxId
         );
         setWorkBoxes(newWorkBoxes);
         setIsDeleteModalOpen(false);
         setSelectedBoxId(null);
+        setSelectedFileURL(null);
       }
     }
   };
@@ -93,17 +119,29 @@ const ResumePage = () => {
   };
 
   const confirmUpload = async () => {
-    if (!selectedFile) return;
+    console.log("confirmUpload called");
+    if (!selectedFile) {
+      console.log("No file selected");
+      return;
+    }
 
-    const fileName = `${Date.now()}_${selectedFile.name}`;
+    console.log("File selected: ", selectedFile);
+
+    const fileName = `${Date.now()}_${btoa(
+      unescape(encodeURIComponent(selectedFile.name))
+    )}`;
+    console.log("Uploading file as: ", fileName);
+
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from("uploads")
       .upload(`public/${fileName}`, selectedFile);
 
     if (uploadError) {
-      console.error("Error uploading file:", uploadError);
+      console.error("Error uploading file:", uploadError.message);
     } else {
-      const fileURL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/uploads/${fileName}`;
+      console.log("File uploaded successfully: ", uploadData);
+
+      const fileURL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/uploads/public/${fileName}`;
       const { data: insertData, error: insertError } = await supabase
         .from("file_uploads")
         .insert([
@@ -116,8 +154,13 @@ const ResumePage = () => {
         .select();
 
       if (insertError) {
-        console.error("Error saving file URL to database:", insertError);
+        console.error(
+          "Error saving file URL to database:",
+          insertError.message
+        );
       } else if (insertData && insertData.length > 0) {
+        console.log("File URL saved to database: ", insertData);
+
         setWorkBoxes((prevBoxes) => [
           ...prevBoxes,
           {
@@ -141,14 +184,27 @@ const ResumePage = () => {
   const handleDownload = (id: string) => {
     const workBox = workBoxes.find((box) => box.id === id);
     if (workBox && workBox.fileURL) {
+      console.log("Downloading file from URL: ", workBox.fileURL);
       window.open(workBox.fileURL, "_blank");
     }
   };
 
   return (
     <div className="p-6 container mx-auto max-w-[1400px]">
-      <h1 className="text-start text-2xl font-bold mb-5">이력서</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 p-2">
+      <div className="mt-3 flex justify-center">
+        <div className="w-full max-w-[1200px]">
+          <Image
+            src="/resume-banner.png"
+            alt="이력서 작성 배너"
+            width={1000}
+            height={103}
+            layout="responsive"
+            className="rounded-lg"
+          />
+        </div>
+      </div>
+      <div className="mt-12" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 p-2 mt-12">
         <div className="m-0.5">
           <AddBtn />
         </div>
@@ -161,7 +217,7 @@ const ResumePage = () => {
               id={box.id}
               title={box.title || box.file_name || ""}
               date={box.created_at?.split("T")[0] || ""}
-              onDelete={() => handleDelete(box.id)}
+              onDelete={() => handleDelete(box.id, box.fileURL)}
               onEdit={() => handleEdit(box.id)}
               onTitleClick={() => handleDownload(box.id)}
               isFileUpload={!!box.fileURL}
