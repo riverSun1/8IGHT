@@ -27,19 +27,13 @@ const WorkBox: React.FC<WorkBoxProps> = ({
 }) => {
   const router = useRouter();
 
-  const handleEditClick = () => {
-    if (onEdit) {
-      onEdit();
-    } else {
-      router.push(`/new-resume?id=${id}`);
-    }
-  };
-
   const handleTitleClick = () => {
     if (isFileUpload && fileURL) {
       window.open(fileURL, "_blank");
+    } else if (onEdit) {
+      onEdit();
     } else {
-      handleEditClick();
+      router.push(`/new-resume?id=${id}`);
     }
   };
 
