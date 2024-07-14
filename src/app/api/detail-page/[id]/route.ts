@@ -1,7 +1,5 @@
-import { createClient } from "@/supabase/client";
 import axios from "axios";
 import { NextResponse } from "next/server";
-const supabase = createClient();
 
 // 상세페이지 API
 export const GET = async (
