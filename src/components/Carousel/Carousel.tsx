@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import main1 from "../../../public/assets/images/main1.webp";
+import main3 from "../../../public/assets/images/main1.jpg";
 import main2 from "../../../public/assets/images/main2.webp";
-import main3 from "../../../public/assets/images/main3.webp";
+import main1 from "../../../public/assets/images/main3.webp";
 
 const Carousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
