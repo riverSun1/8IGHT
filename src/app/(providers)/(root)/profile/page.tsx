@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/auth.context";
-import { fetchUserProfile, updateUserProfile } from "@/app/api/profile/route";
 import UserProfileImage from "@/components/UserProfile/UserProfileImage";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 interface UserProfile {
   nickname: string;
@@ -26,10 +26,13 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchProfile = async () => {
       if (!me) return;
-      const profile = await fetchUserProfile(me.id);
+      const profile = await axios.get<UserProfile | null>("/api/profile", {
+        params: {
+          userId: me.id,
+        },
+      });
       if (profile) {
-        setUserProfile(profile as UserProfile);
-        setInitialProfile(profile as UserProfile);
+        setUserProfile(profile.data);
       }
     };
 
@@ -56,12 +59,12 @@ export default function ProfilePage() {
   const handleSave = async () => {
     if (!userProfile || !me) return;
 
-    const success = await updateUserProfile(me.id, userProfile);
+    const success = await axios.post("/api/profile", {
+      profile: userProfile,
+      userId: me.id,
+    });
     if (success) {
       setIsEditing(false);
-      if (userProfile) {
-        setInitialProfile({ ...userProfile });
-      }
     }
   };
 
