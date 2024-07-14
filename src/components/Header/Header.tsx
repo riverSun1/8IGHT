@@ -11,7 +11,7 @@ import logo from "../../../public/main_logo.png";
 import LoadingSpinner from "../Loading/LoadingSpinner";
 
 const Header = () => {
-  const { me, isLoggedIn, logOut } = useAuth();
+  const { isLoggedIn, logOut } = useAuth();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
