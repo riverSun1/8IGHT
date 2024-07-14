@@ -1,60 +1,23 @@
 "use client";
 
-import { useAuth } from "@/contexts/auth.context";
 import { useCostumModal } from "@/contexts/modal.context";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { ChangeEvent } from "react";
+import { ResumesType } from "./ApplyButton";
 
-const UserResumes = () => {
-  const { me } = useAuth();
+const UserResumes = ({
+  userResumes,
+  checkbox,
+  setCheckbox,
+}: {
+  userResumes: ResumesType[];
+  checkbox: string | null;
+  setCheckbox: any;
+}) => {
   const { handleOpen } = useCostumModal();
   const router = useRouter();
-  const [checkbox, setCheckbox] = useState<boolean>(false);
-  const [userResumes, setUserResumes] = useState<any[]>([]);
 
-  //supabase 파일형태 이력서 가져오기
-  const { data: files, error: filesError } = useQuery({
-    queryKey: ["userFile"],
-    queryFn: async () => {
-      try {
-        const response = await axios.get("/api/detail-page/file", {
-          params: {
-            email: me?.email,
-          },
-        });
-        return response.data;
-      } catch (error) {
-        console.log("error", error);
-      }
-    },
-  });
-
-  //supabase 작성한 이력서 가져오기
-  const { data: resumes, error: resumesError } = useQuery({
-    queryKey: ["userResumes"],
-    queryFn: async () => {
-      try {
-        const response = await axios.get("/api/detail-page/resumes", {
-          params: {
-            email: me?.email,
-          },
-        });
-        const data = response.data;
-        return response.data;
-      } catch (error) {}
-    },
-  });
-
-  useEffect(() => {
-    if (files && resumes) {
-      setUserResumes([...files, ...resumes]);
-    }
-  }, [files, resumes]);
-
-  console.log("userResumes", userResumes);
-
+  //이력서 수정 버튼 모달창
   const retouchResume = () => {
     handleOpen({
       title: "이력서 수정",
@@ -65,8 +28,12 @@ const UserResumes = () => {
     });
   };
 
+  const check = (e: ChangeEvent<HTMLInputElement>) => {
+    setCheckbox(e.target.value);
+  };
+
   return (
-    <div>
+    <>
       {userResumes?.map((resume: any) => {
         if (!resume) {
           return;
@@ -74,9 +41,15 @@ const UserResumes = () => {
         return (
           <div
             key={resume.id}
-            className="flex justify-start items-center border rounded-xl py-4 px-3 gap-3 mt-3  relative"
+            className="flex justify-start items-center border rounded-xl py-4 px-3 gap-3 mt-3  relative "
           >
-            <input type="radio" name="resumeCheckbox" />
+            <input
+              type="radio"
+              name="resumeCheckbox"
+              value={resume.id}
+              checked={checkbox === resume.id}
+              onChange={check}
+            />
             <div className="flex flex-col gap-2 ">
               <p className="text-sm/[13px] font-semibold">
                 {resume.title ? resume.title : resume.file_name}
@@ -104,7 +77,7 @@ const UserResumes = () => {
           </div>
         );
       })}
-    </div>
+    </>
   );
 };
 

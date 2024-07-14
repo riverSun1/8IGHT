@@ -2,20 +2,76 @@
 
 import { useAuth } from "@/contexts/auth.context";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import UserResumes from "./UserResumes";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { Alert } from "@mui/material";
+import { Tables } from "../../../../../../../types/supabase";
+import { useCostumModal } from "@/contexts/modal.context";
+import { useRouter } from "next/navigation";
 
 export type ApplyButtonProps = {
   email: string;
 };
 
+export type ResumesType = Tables<"resumes"> & {
+  product: Tables<"file_uploads">;
+};
+
 const ApplyButton = () => {
+  const [apply, setApply] = useState<boolean>(true);
+  const [name, setName] = useState<string>("");
+  const [phone, setPhone] = useState<string>("");
+  const [userResumes, setUserResumes] = useState<ResumesType[]>([]);
+  const [alertText, setAlertText] = useState<string>("");
+  const [checkbox, setCheckbox] = useState<string | null>("");
+  const { handleOpen } = useCostumModal();
+  const router = useRouter();
   const { me } = useAuth();
-  const [apply, setApply] = useState(true);
 
-  const nameRef = useRef(null);
-  const phoneRef = useRef(null);
+  //supabase 파일형태 이력서 가져오기
+  const { data: files, error: filesError } = useQuery({
+    queryKey: ["userFile"],
+    queryFn: async () => {
+      try {
+        const response = await axios.get("/api/detail-page/file", {
+          params: {
+            email: me?.email,
+          },
+        });
+        return response.data;
+      } catch (error) {
+        console.log("error", error);
+      }
+    },
+  });
 
+  //supabase 작성한 이력서 가져오기
+  const { data: resumes, error: resumesError } = useQuery({
+    queryKey: ["userResumes"],
+    queryFn: async () => {
+      try {
+        const response = await axios.get("/api/detail-page/resumes", {
+          params: {
+            email: me?.email,
+          },
+        });
+        const data = response.data;
+        return data;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (files && resumes) {
+      setUserResumes([...files, ...resumes]);
+    }
+  }, [files, resumes]);
+
+  // 지원하기 버튼 클릭 시 로그인 확인
   const clickHandler = () => {
     if (!me) {
       alert("로그인해주세요");
@@ -25,8 +81,64 @@ const ApplyButton = () => {
     }
   };
 
+  //이름
+  const userName = (e: ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  };
+
+  //연락처
+  const phoneNumber = (e: ChangeEvent<HTMLInputElement>) => {
+    setPhone(e.target.value);
+  };
+
+  //Alert창 시간
+  const alertTime = () => {
+    setTimeout(() => {
+      setAlertText("");
+    }, 3000);
+  };
+
+  // 제출하기 버튼 클릭 이벤트
+  const ApplyHandle = () => {
+    //이름 작성 유효성 검사
+    if (!name) {
+      setAlertText("이름을 입력해주세요");
+      alertTime();
+      return;
+    }
+    // 연락처 유효성 검사
+    if (!phone) {
+      setAlertText("연락처를 입력해주세요");
+      alertTime();
+      return;
+    }
+    //이력서 체크 유효성 검사
+    if (!checkbox) {
+      setAlertText("이력서 작성해 주세요");
+      alertTime();
+      return;
+    }
+    handleOpen({
+      title: "이력서 제출",
+      description: "이력서 제출하시겠습니까?",
+      handleconfirmButtonClick: () => {
+        alert("제출이 완료되었습니다.");
+        router.push("/");
+      },
+    });
+  };
+
   return (
     <>
+      {alertText ? (
+        <Alert
+          variant="outlined"
+          severity="warning"
+          className=" absolute right-50% top-0 mt-2"
+        >
+          {alertText}
+        </Alert>
+      ) : null}
       {apply ? (
         <button
           className=" text-white w-80 py-3 flex justify-center items-center bg-blue-500 rounded-lg"
@@ -55,7 +167,7 @@ const ApplyButton = () => {
                 type="text"
                 name="name"
                 id="name"
-                ref={nameRef}
+                onChange={userName}
                 className="focus:outline-none text-sm w-8/12"
               />
             </div>
@@ -71,12 +183,18 @@ const ApplyButton = () => {
                 type="text"
                 name="phon"
                 id="phon"
+                maxLength={11}
                 className="focus:outline-none w-8/12 text-sm "
-                ref={phoneRef}
+                placeholder="- 빼고 입력해주세요"
+                onChange={phoneNumber}
               />
             </div>
             <h2 className="font-semibold text-lg pt-6">첨부파일 선택</h2>
-            <UserResumes />
+            <UserResumes
+              userResumes={userResumes}
+              checkbox={checkbox}
+              setCheckbox={setCheckbox}
+            />
             <div className="py-2 w-full  border rounded-lg my-3 text-center">
               <Link href={"/resume"} className=" py-2 text-blue-500 text-sm ">
                 새 이력서 작성하기
@@ -101,7 +219,12 @@ const ApplyButton = () => {
             </ul>
           </div>
           <div className="p-4 border-t">
-            <button className="w-full border rounded-lg py-2 ">제출하기</button>
+            <button
+              className="w-full border rounded-lg py-2 "
+              onClick={ApplyHandle}
+            >
+              제출하기
+            </button>
           </div>
         </div>
       )}
