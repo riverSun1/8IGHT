@@ -1,5 +1,4 @@
 "use client";
-
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useAuth } from "@/contexts/auth.context";
@@ -8,9 +7,7 @@ import ArrowLeftSvg from "../_components/icons/ArrowLeftSvg";
 import AuthInput from "../_components/Input";
 import PhoneInputSection from "../_components/PhoneInputSection";
 import SignUpTerms from "../_components/SignUpTerms";
-
 export type handleCheckType = (successBoolean: boolean) => void;
-
 function SignUpPage() {
   const { signUp } = useAuth();
   const signUpRouter = useRouter();
@@ -22,7 +19,6 @@ function SignUpPage() {
   const [isPhoneCheckSuccess, setIsPhoneCheckSuccess] =
     useState<boolean>(false);
   const [isChecked, setIsChecked] = useState<boolean>(false);
-
   const isAllOkay =
     !emialError &&
     email !== "" &&
@@ -33,11 +29,9 @@ function SignUpPage() {
     isChecked
       ? true
       : false;
-
   const handleCheck: handleCheckType = (successBoolean) => {
     setIsPhoneCheckSuccess(successBoolean);
   };
-
   const handleClickSignUp = async () => {
     if (!isAllOkay) {
       return;
@@ -47,7 +41,6 @@ function SignUpPage() {
       return signUpRouter.replace("/");
     }
   };
-
   return (
     <>
       <button
@@ -100,5 +93,4 @@ function SignUpPage() {
     </>
   );
 }
-
 export default SignUpPage;
