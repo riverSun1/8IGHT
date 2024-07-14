@@ -26,13 +26,14 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchProfile = async () => {
       if (!me) return;
-      const profile = await axios.get<UserProfile | null>("/api/profile", {
+      const response = await axios.get<UserProfile | null>("/api/profile", {
         params: {
           userId: me.id,
         },
       });
-      if (profile) {
-        setUserProfile(profile.data);
+      if (response.data) {
+        setUserProfile(response.data);
+        setInitialProfile(response.data); // 초기 상태 설정
       }
     };
 
@@ -52,7 +53,7 @@ export default function ProfilePage() {
   const handleCancel = () => {
     setIsEditing(false);
     if (initialProfile) {
-      setUserProfile(initialProfile);
+      setUserProfile(initialProfile); // 초기 상태로 되돌림
     }
   };
 
@@ -64,6 +65,7 @@ export default function ProfilePage() {
       userId: me.id,
     });
     if (success) {
+      setInitialProfile(userProfile); // 저장 후 초기 상태 업데이트
       setIsEditing(false);
     }
   };
