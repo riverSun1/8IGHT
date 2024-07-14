@@ -92,7 +92,7 @@ export default function ProfilePage() {
   };
 
   if (!userProfile) {
-    return <div>Loading...</div>;
+    return <div></div>;
   }
 
   return (
