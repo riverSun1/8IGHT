@@ -3,6 +3,7 @@
 import DropDown, { DropDownData } from "@/app/(providers)/_components/DropDown";
 import BarsSvg from "@/app/(providers)/_components/icons/BarsSvg";
 import { useAuth } from "@/contexts/auth.context";
+import { useLoading } from "@/contexts/loading.context";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -17,6 +18,7 @@ const Header = () => {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { openLoading, closeLoading } = useLoading();
 
   const dropdownDatas: DropDownData[] = [
     {
@@ -57,7 +59,9 @@ const Header = () => {
   ];
 
   const handleClickLogOut = async () => {
-    logOut();
+    openLoading();
+    await logOut();
+    closeLoading();
   };
 
   useEffect(() => {
@@ -88,6 +92,12 @@ const Header = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      closeLoading();
     };
   }, []);
 
@@ -131,10 +141,14 @@ const Header = () => {
             ) : (
               <>
                 <div className="border p-2 border-gray-300 rounded-md text-blue-500 font-bold hover:bg-gray-100 transition-colors duration-300 cursor-pointer">
-                  <Link href="/sign-up">회원가입</Link>
+                  <Link href="/sign-up" onClick={() => openLoading()}>
+                    회원가입
+                  </Link>
                 </div>
                 <div className="border p-2 border-gray-300 rounded-md text-blue-500 font-bold hover:bg-gray-100 transition-colors duration-300 cursor-pointer">
-                  <Link href="/log-in">로그인</Link>
+                  <Link href="/log-in" onClick={() => openLoading()}>
+                    로그인
+                  </Link>
                 </div>
               </>
             )}
