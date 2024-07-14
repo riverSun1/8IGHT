@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useState, useEffect, ChangeEvent } from "react";
 import {
   Modal,
@@ -13,7 +11,7 @@ import {
 import { useFormik, FormikHelpers } from "formik";
 import * as yup from "yup";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
-import axios from "axios";
+import { createClient } from "@/supabase/client";
 import { useAuth } from "@/contexts/auth.context";
 
 interface FormValues {
@@ -37,8 +35,9 @@ const PostModal: React.FC<PostModalProps> = ({
   addPost,
   refreshPosts,
 }) => {
+  const supabase = createClient();
   const { isLoggedIn, me, userData } = useAuth();
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [confirmCancel, setConfirmCancel] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
@@ -50,19 +49,39 @@ const PostModal: React.FC<PostModalProps> = ({
     onSubmit: async (values, { setSubmitting }: FormikHelpers<FormValues>) => {
       if (isLoggedIn) {
         try {
-          const response = await axios.post("/api/auth/post", {
-            postContent: values.postContent,
-            image: selectedImage,
-            user_id: me?.id,
-          });
+          let imageUrl = null;
 
-          if (response.status === 200) {
-            if (response.data && response.data.length > 0) {
-              addPost(response.data[0]);
+          if (selectedImage) {
+            const { data: uploadData, error: uploadError } = await supabase.storage
+              .from("community-post-image")
+              .upload(`${Date.now()}-${selectedImage.name}`, selectedImage);
+
+            if (uploadError) {
+              console.error("Error uploading image:", uploadError);
+            } else {
+              const { data: urlData } = supabase.storage
+                .from("community-post-image")
+                .getPublicUrl(uploadData.path);
+              imageUrl = urlData.publicUrl;
+            }
+          }
+
+          const { data, error } = await supabase
+            .from("community_post")
+            .insert({
+              comment: values.postContent,
+              imageUrl,
+              user_id: me?.id,
+            })
+            .select("*");
+
+          if (error) {
+            console.error("Error creating post:", error);
+          } else {
+            if (data && data.length > 0) {
+              addPost(data[0]);
             }
             setSuccessModalOpen(true);
-          } else {
-            console.error("Error:", response.data.error);
           }
         } catch (error) {
           console.error("Error submitting the form", error);
@@ -85,7 +104,7 @@ const PostModal: React.FC<PostModalProps> = ({
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      setSelectedImage(URL.createObjectURL(event.target.files[0]));
+      setSelectedImage(event.target.files[0]);
     }
   };
 
@@ -169,7 +188,7 @@ const PostModal: React.FC<PostModalProps> = ({
               {selectedImage && (
                 <div className="flex justify-center mb-4">
                   <img
-                    src={selectedImage}
+                    src={URL.createObjectURL(selectedImage)}
                     alt="Selected"
                     className="max-h-40 rounded-lg"
                   />

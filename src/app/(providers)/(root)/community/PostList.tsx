@@ -1,18 +1,20 @@
+import React, { useEffect, useState } from "react";
+import { Database } from "@/supabase/types";
 import { createClient } from "@/supabase/client";
-import { FaHeart, FaRegHeart } from "react-icons/fa"; // npm install react-icons
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import LikeModal from "./LikeModal";
 import EditPostModal from "./EditPostModal";
 import { useAuth } from "@/contexts/auth.context";
 import { IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import React, { useEffect, useState } from "react";
-import { Database } from "@/supabase/types";
 
 interface PostListProps {
   posts: Database["public"]["Tables"]["community_post"]["Row"][];
   setPosts: React.Dispatch<
-    React.SetStateAction<Database["public"]["Tables"]["community_post"]["Row"][]>
+    React.SetStateAction<
+      Database["public"]["Tables"]["community_post"]["Row"][]
+    >
   >;
 }
 
