@@ -100,7 +100,7 @@ const Header = () => {
             <Image src={logo} alt="logo" width={120} height={80} />
           </Link>
           <div
-            className="relative ml-auto cursor-pointer min-[551px]:hidden"
+            className="relative ml-auto cursor-pointer min-[552px]:hidden"
             onClick={() => setIsOpen((prev) => !prev)}
           >
             <BarsSvg width={22} height={22} color="#676767" />
