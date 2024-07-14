@@ -65,15 +65,17 @@
 
 //   const handleDelete = (id: string) => {
 //     setSelectedBoxId(id);
+
 //     setIsDeleteModalOpen(true);
 //   };
 
 //   const confirmDelete = async () => {
 //     if (selectedBoxId) {
 //       const { error } = await supabase
-//         .from("resumes")
+//         .from("file_uploads")
 //         .delete()
 //         .eq("id", selectedBoxId);
+//       console.log("selectedBoxId => ", selectedBoxId);
 
 //       if (error) {
 //         console.error("Error deleting resume:", error);
@@ -106,6 +108,7 @@
 //     const fileName = `${Date.now()}_${btoa(
 //       unescape(encodeURIComponent(selectedFile.name))
 //     )}`;
+//     // console.log("selectedFile.name => ", selectedFile.name);
 //     console.log("Uploading file as: ", fileName);
 
 //     const { data: uploadData, error: uploadError } = await supabase.storage
@@ -228,7 +231,7 @@
 
 // export default ResumePage;
 
-//
+// 스토리지 삭제 추가
 "use client";
 
 import { useAuth } from "@/contexts/auth.context";
@@ -256,6 +259,7 @@ const ResumePage = () => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedBoxId, setSelectedBoxId] = useState<string | null>(null);
+  const [selectedFileURL, setSelectedFileURL] = useState<string | null>(null); // 추가됨
 
   useEffect(() => {
     if (!isLoggedIn) {
@@ -294,27 +298,52 @@ const ResumePage = () => {
     }
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = (id: string, fileURL: string | null = null) => {
+    // fileURL 추가
     setSelectedBoxId(id);
+    setSelectedFileURL(fileURL); // 추가됨
     setIsDeleteModalOpen(true);
   };
 
   const confirmDelete = async () => {
     if (selectedBoxId) {
-      const { error } = await supabase
-        .from("resumes")
+      let error = null;
+
+      if (selectedFileURL) {
+        const fileName = selectedFileURL.split("/").pop();
+        console.log("fileName => ", fileName);
+
+        const { error: deleteFileError } = await supabase.storage
+          .from("uploads")
+          .remove([`public/${fileName}`]);
+
+        if (deleteFileError) {
+          console.error("Error deleting file from storage:", deleteFileError);
+          error = deleteFileError;
+        }
+      }
+
+      const { error: deleteFileUploadError } = await supabase
+        .from("file_uploads")
         .delete()
         .eq("id", selectedBoxId);
 
-      if (error) {
-        console.error("Error deleting resume:", error);
-      } else {
+      if (deleteFileUploadError) {
+        console.error(
+          "Error deleting file upload record:",
+          deleteFileUploadError
+        );
+        error = deleteFileUploadError;
+      }
+
+      if (!error) {
         const newWorkBoxes = workBoxes.filter(
           (box) => box.id !== selectedBoxId
         );
         setWorkBoxes(newWorkBoxes);
         setIsDeleteModalOpen(false);
         setSelectedBoxId(null);
+        setSelectedFileURL(null); // 추가됨
       }
     }
   };
@@ -353,7 +382,7 @@ const ResumePage = () => {
         .insert([
           {
             fileURL,
-            file_name: fileName, // Base64로 인코딩된 파일명을 저장
+            file_name: selectedFile.name,
             email: me?.email ?? "",
           },
         ])
@@ -390,10 +419,8 @@ const ResumePage = () => {
   const handleDownload = (id: string) => {
     const workBox = workBoxes.find((box) => box.id === id);
     if (workBox && workBox.fileURL) {
-      // 파일명을 Base64로 디코딩
-      const encodedFileName = workBox.fileURL.split("/").pop() || "";
       const decodedFileName = decodeURIComponent(
-        escape(atob(encodedFileName.split("_").pop() || ""))
+        escape(atob(workBox.fileURL.split("/").pop() || ""))
       );
       console.log("Downloading file: ", decodedFileName);
       window.open(workBox.fileURL, "_blank");
@@ -410,6 +437,7 @@ const ResumePage = () => {
             width={1000}
             height={103}
             layout="responsive"
+            className="rounded-lg"
           />
         </div>
       </div>
@@ -427,7 +455,7 @@ const ResumePage = () => {
               id={box.id}
               title={box.title || box.file_name || ""}
               date={box.created_at?.split("T")[0] || ""}
-              onDelete={() => handleDelete(box.id)}
+              onDelete={() => handleDelete(box.id, box.fileURL)} // fileURL 추가
               onEdit={() => handleEdit(box.id)}
               onTitleClick={() => handleDownload(box.id)}
               isFileUpload={!!box.fileURL}
