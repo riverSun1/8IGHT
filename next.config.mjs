@@ -6,7 +6,6 @@ const nextConfig = {
       "raw.githubusercontent.com",
       "via.placeholder.com",
       "www.wanted.co.kr",
-      "localhost",
     ],
     remotePatterns: [
       {
