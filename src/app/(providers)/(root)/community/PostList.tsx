@@ -2,6 +2,7 @@ import { createClient } from "@/supabase/client";
 // import { Database } from "@/supabase/types";
 import CommentIcon from "@mui/icons-material/Comment";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { Database } from "../../../../../types/supabase";
 
@@ -76,10 +77,6 @@ export const PostList: React.FC<{ posts: CommunityPost[] }> = ({ posts }) => {
     }
   };
 
-  const handleComment = (postId: string) => {
-    setCommentModalOpen(postId);
-  };
-
   const handleCommentModalClose = () => {
     setCommentModalOpen(null);
   };
@@ -133,12 +130,12 @@ export const PostList: React.FC<{ posts: CommunityPost[] }> = ({ posts }) => {
               >
                 <ThumbUpIcon className="mr-1" /> 좋아요 {likes[post.id] || 0}
               </button>
-              <button
+              <Link
                 className="flex items-center text-gray-500 hover:text-blue-500 transition"
-                onClick={() => handleComment(post.id)}
+                href={`/community/post/${post.id}`}
               >
                 <CommentIcon className="mr-1" /> 댓글
-              </button>
+              </Link>
             </div>
           </div>
         ))
