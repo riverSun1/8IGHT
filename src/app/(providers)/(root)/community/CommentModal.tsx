@@ -1,13 +1,17 @@
 // "use client";
+// "use client";
 
-// import { useAuth } from "@/contexts/auth.context";
-// import { createClient } from "@/supabase/client";
-// import { Box, Button, Modal, TextField } from "@mui/material";
-// import { useMutation, useQueryClient } from "@tanstack/react-query";
-// import { FormikHelpers, useFormik } from "formik";
-// import React, { ChangeEvent, useState } from "react";
+// import React, { useState, ChangeEvent } from "react";
+// import { Modal, Box, TextField, Button } from "@mui/material";
+// import { useFormik, FormikHelpers } from "formik";
 // import * as yup from "yup";
+// import { useMutation, useQueryClient } from "@tanstack/react-query";
+// import { createClient } from "@/supabase/client";
+// import { useAuth } from "@/contexts/auth.context";
 
+// interface FormValues {
+//   commentContent: string;
+// }
 // interface FormValues {
 //   commentContent: string;
 // }
@@ -15,7 +19,15 @@
 // const validationSchema = yup.object({
 //   commentContent: yup.string().required("내용을 입력해 주세요"),
 // });
+// const validationSchema = yup.object({
+//   commentContent: yup.string().required("내용을 입력해 주세요"),
+// });
 
+// interface CommentModalProps {
+//   open: boolean;
+//   handleClose: () => void;
+//   postId: string;
+// }
 // interface CommentModalProps {
 //   open: boolean;
 //   handleClose: () => void;
@@ -31,7 +43,17 @@
 //   const queryClient = useQueryClient();
 //   const [confirmCancel, setConfirmCancel] = useState(false);
 //   const [successModalOpen, setSuccessModalOpen] = useState(false);
+// const CommentModal: React.FC<CommentModalProps> = ({
+//   open,
+//   handleClose,
+//   postId,
+// }) => {
+//   const { isLoggedIn, me, userData } = useAuth();
+//   const queryClient = useQueryClient();
+//   const [confirmCancel, setConfirmCancel] = useState(false);
+//   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
+//   const supabase = createClient();
 //   const supabase = createClient();
 
 //   const mutation = useMutation({
@@ -44,14 +66,25 @@
 //           user_id: me?.id,
 //         })
 //         .single();
+//   const mutation = useMutation({
+//     mutationFn: async (values: FormValues) => {
+//       const { data, error } = await supabase
+//         .from("comments")
+//         .insert({
+//           content: values.commentContent,
+//           post_id: postId,
+//           user_id: me?.id,
+//         })
+//         .single();
 
+//       if (error) throw error;
 //       if (error) throw error;
 
 //       return data;
 //     },
 //     onSuccess: () => {
 //       setSuccessModalOpen(true);
-//       queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+//       queryClient.invalidateQueries(["comments", postId]);
 //     },
 //     onError: (error: any) => {
 //       console.error("Error submitting the form", error);
@@ -66,7 +99,18 @@
 //       setSubmitting(false);
 //     },
 //   });
+//   const formik = useFormik<FormValues>({
+//     initialValues: { commentContent: "" },
+//     validationSchema,
+//     onSubmit: (values, { setSubmitting }: FormikHelpers<FormValues>) => {
+//       mutation.mutate(values);
+//       setSubmitting(false);
+//     },
+//   });
 
+//   const handleDescriptionChange = (event: ChangeEvent<HTMLInputElement>) => {
+//     formik.handleChange(event);
+//   };
 //   const handleDescriptionChange = (event: ChangeEvent<HTMLInputElement>) => {
 //     formik.handleChange(event);
 //   };
@@ -74,7 +118,13 @@
 //   const handleCancel = () => {
 //     setConfirmCancel(true);
 //   };
+//   const handleCancel = () => {
+//     setConfirmCancel(true);
+//   };
 
+//   const confirmCancelClose = () => {
+//     setConfirmCancel(false);
+//   };
 //   const confirmCancelClose = () => {
 //     setConfirmCancel(false);
 //   };
@@ -83,7 +133,15 @@
 //     setConfirmCancel(false);
 //     handleClose();
 //   };
+//   const confirmCancelExit = () => {
+//     setConfirmCancel(false);
+//     handleClose();
+//   };
 
+//   const handleSuccessClose = () => {
+//     setSuccessModalOpen(false);
+//     handleClose();
+//   };
 //   const handleSuccessClose = () => {
 //     setSuccessModalOpen(false);
 //     handleClose();
@@ -115,7 +173,7 @@
 //             </div>
 //             <div className="flex items-center">
 //               <img
-//                 src={userData?.imageUrl || "/images/profile-placeholder.png"}
+//                 src={userData?.imageUrl || "/assets/images/profile-placeholder.png"}
 //                 alt="프로필"
 //                 className="w-10 h-10 rounded-full mr-2"
 //               />
