@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Modal, Box, Avatar, Typography, Button } from "@mui/material";
-import { Database } from "@/supabase/types";
+import { Database } from "../../../../../types/supabase";
 
 interface LikeModalProps {
   open: boolean;
