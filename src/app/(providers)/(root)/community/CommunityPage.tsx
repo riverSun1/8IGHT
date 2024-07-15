@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { createClient } from "@/supabase/client";
-import { Database } from "@/supabase/types";
 import { useQuery } from "@tanstack/react-query";
 import PostList from "./PostList";
 import PostModal from "./PostModal";
+import { Community_Post } from "@/types/communtypes";
 
 const CommunityPage: React.FC = () => {
   const supabase = createClient();
@@ -24,15 +24,17 @@ const CommunityPage: React.FC = () => {
   });
 
   const [posts, setPosts] = useState<
-    (Database["public"]["Tables"]["community_post"]["Row"] & { like: number | null })[]
+    (Community_Post & {
+      like: number | null;
+    })[]
   >([]);
 
   useEffect(() => {
     if (data) {
       const formattedData = data.map((post) => ({
         ...post,
-        user_id: post.user_id || "", 
-        created_at: post.created_at || "", 
+        user_id: post.user_id || "",
+        created_at: post.created_at || "",
       }));
       setPosts(formattedData);
     }
@@ -43,9 +45,7 @@ const CommunityPage: React.FC = () => {
   const handlePostOpen = () => setPostModalOpen(true);
   const handlePostClose = () => setPostModalOpen(false);
 
-  const addPost = (
-    post: Database["public"]["Tables"]["community_post"]["Row"]
-  ) => {
+  const addPost = (post: Community_Post) => {
     refetch();
   };
 
@@ -70,7 +70,11 @@ const CommunityPage: React.FC = () => {
           </div>
         </div>
         <div className="pt-4 h-[calc(100vh-120px)] overflow-y-auto scrollbar-hide">
-          {isLoading ? <p>Loading...</p> : <PostList posts={posts} />}
+          {isLoading ? (
+            <p>Loading...</p>
+          ) : (
+            <PostList posts={posts} setPosts={setPosts} />
+          )}
         </div>
       </main>
       <PostModal

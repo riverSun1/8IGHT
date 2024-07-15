@@ -102,7 +102,7 @@ const PostList: React.FC<PostListProps> = ({ posts, setPosts }) => {
   }, [posts, isLoggedIn, me]);
 
   const handleLike = async (postId: string) => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn || !me) {
       window.location.href = "/log-in";
       return;
     }
@@ -115,7 +115,7 @@ const PostList: React.FC<PostListProps> = ({ posts, setPosts }) => {
           .from("post_likes")
           .delete()
           .eq("post_id", postId)
-          .eq("user_id", me?.id);
+          .eq("user_id", me.id);
 
         if (deleteError) {
           throw deleteError;
@@ -134,7 +134,7 @@ const PostList: React.FC<PostListProps> = ({ posts, setPosts }) => {
           .from("post_likes")
           .insert({
             post_id: postId,
-            user_id: me?.id,
+            user_id: me.id,
           });
 
         if (insertError) {
@@ -153,10 +153,6 @@ const PostList: React.FC<PostListProps> = ({ posts, setPosts }) => {
     } catch (error) {
       console.error("Error updating like count:", error);
     }
-  };
-
-  const handleCommentModalClose = () => {
-    setCommentModalOpen(null);
   };
 
   console.log("Rendering posts:", posts);
@@ -178,7 +174,7 @@ const PostList: React.FC<PostListProps> = ({ posts, setPosts }) => {
         const { data: userData, error: userError } = await supabase
           .from("users")
           .select("nickname, email, imageUrl")
-          .eq("id", like.user_id)
+          .eq("id", like.user_id || "")
           .single();
         if (userError) {
           console.error("Error fetching user data:", userError);
@@ -224,6 +220,8 @@ const PostList: React.FC<PostListProps> = ({ posts, setPosts }) => {
   };
 
   const handlePostUpdated = (updatedPost: Community_Post) => {
+    console.log("updatedPost", updatedPost);
+    console.log("post", posts);
     setPosts((prevPosts) =>
       prevPosts.map((post) => (post.id === updatedPost.id ? updatedPost : post))
     );
@@ -248,6 +246,7 @@ const PostList: React.FC<PostListProps> = ({ posts, setPosts }) => {
         <p className="text-center text-gray-500">No posts available</p>
       ) : (
         posts.map((post) => {
+          if (!post.user_id) return null;
           const isExpanded = expandedPosts[post.id];
           const content = isExpanded
             ? post.comment
@@ -309,7 +308,7 @@ const PostList: React.FC<PostListProps> = ({ posts, setPosts }) => {
                 )}
               </div>
               <div className="text-gray-500 text-sm mb-4">
-                {new Date(post.created_at).toLocaleString()}
+                {post.created_at && new Date(post.created_at).toLocaleString()}
               </div>
               <div className="flex justify-between items-center">
                 <div>
@@ -353,7 +352,7 @@ const PostList: React.FC<PostListProps> = ({ posts, setPosts }) => {
           likeUsers={likeUsers}
           postUserData={
             postUserData[
-              posts.find((post) => post.id === likeModalOpen)!.user_id
+              posts.find((post) => post.id === likeModalOpen)!.user_id || ""
             ]
           }
         />

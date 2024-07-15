@@ -4,7 +4,8 @@ import { useFormik, FormikHelpers } from "formik";
 import * as yup from "yup";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import { createClient } from "@/supabase/client";
-import { Database } from "@/supabase/types";
+import { Database } from "../../../../../types/supabase";
+
 
 interface FormValues {
   postContent: string;
