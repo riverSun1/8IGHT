@@ -85,11 +85,11 @@ export default function ProfilePage() {
   };
 
   const handleUseDefaultImage = () => {
-    // 임의로 설정한 기본 이미지 URL
-    const defaultImageUrl = "/images/profile-placeholder2.png";
+    // 기본 이미지 URL 설정
+    const defaultImageUrl = "/assets/images/profile-placeholder2.png";
     setUserProfile({
       ...userProfile,
-      imageUrl: defaultImageUrl as string,
+      imageUrl: defaultImageUrl,
     } as UserProfile);
   };
 

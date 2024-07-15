@@ -1,4 +1,4 @@
-# Job-notice
+# Job-notice✨
 ## Open API를 활용한 구인/구직 채용공고 웹사이트
 <br>
 
@@ -6,7 +6,7 @@
 ### 2024.07.08 ~ 2024.07.15
 
 ## Job-notice
-> 🔗 <배포링크>
+> 🔗 https://job-notice.vercel.app/
 
 ## Design
 https://www.figma.com/design/EqquHXHynzubNFoAZbSOL9/job-notice?node-id=0-1&t=gKrD0WkJyzQBAJPt-0
@@ -51,63 +51,64 @@ https://teamsparta.notion.site/B08-6b1cc4ee67bf4afdb4b7f584ea810552
 # 📋 주요 기능 소개
 
 # 회원가입
+###  ✔️ 이메일 회원가입, 핸드폰 번호 인증 기능 구현
 <img width="1624" alt="스크린샷 2024-07-15 오전 11 13 41" src="https://github.com/user-attachments/assets/437e6d19-81b1-4213-8486-07f78b71f6ec">
   
-###  ✔️ 이메일 회원가입, 핸드폰 번호 인증 기능 구현
+
 <br>
 <br>
 
 # 로그인 
+###  ✔️ 이메일 로그인
 <img width="1624" alt="스크린샷 2024-07-15 오전 11 13 12" src="https://github.com/user-attachments/assets/45ac4345-a55f-4ea4-ba97-f3f154f61d7e">
   
-###  ✔️ 이메일 로그인
+
 <br>
 <br>
 
 # 헤더
+###  ✔️ 해당 버튼 클릭 시 각 페이지 이동
 <img width="1512" alt="스크린샷 2024-07-15 오전 11 22 37" src="https://github.com/user-attachments/assets/cf50e7f3-27dd-4054-a15c-ec90b9ff6812">
 
   
-###  ✔️ 해당 버튼 클릭 시 각 페이지 이동
 <br>
 <br>
 
 # 메인 페이지 
-![image (2)](https://github.com/user-attachments/assets/712128f6-11e9-40f3-b8d9-3d02b8f6e59f)
-  
 ###  ✔️ 채용 공고 불러오기
 ###  ✔️ 정렬 기능 근무지, 직군, 학력조건
 ###  ✔️ 채용 공고 무한 스크롤 
 ###  ✔️ 배너 이미지 캐러셀 
+![image (2)](https://github.com/user-attachments/assets/712128f6-11e9-40f3-b8d9-3d02b8f6e59f)
+  
+
 <br>
 <br>
 
 # 채용 상세정보 페이지
-![image (4)](https://github.com/user-attachments/assets/0d7aab40-fcce-4310-92f1-a7d7a50a3c3d)
-  
 ###  ✔️ 채용 상세정보 불러오기
 ###  ✔️ 지원하기 버튼 클릭 시 로그인한 해당 유저의 email을 불러오고, 이름과 연락처 기입 가능 or 로그인하지 않은 유저는 로그인 알림창으로 확인
 ###  ✔️ 첨부파일 선택 후 제출하기 or 새 이력서 작성, 이력서 수정하기 버튼 클릭 시 이력서 페이지로 이동 / 해당 내용 미기입시 알림창으로 확인
+![image (4)](https://github.com/user-attachments/assets/0d7aab40-fcce-4310-92f1-a7d7a50a3c3d)
+  
+
 <br>
 <br>
 
 # 소셜 페이지
-<image>
-
 ###  ✔️ 로그인한 유저의 프로필 불러오기
 ###  ✔️ 게시글 불러오기
 ###  ✔️ 로그인한 해당 유저의 게시글만 수정, 삭제 
 ###  ✔️ 이미지, 텍스트 게시글 작성
 ###  ✔️ 좋아요, 로그아웃
 ###  ✔️ 게시글 무한 스크롤
+<img width="1624" alt="스크린샷 2024-07-15 오전 11 50 56" src="https://github.com/user-attachments/assets/6ade263a-0cc7-4c3f-a084-8948bbd552f7">
+
+
 <br>
 <br>
   
 # 이력서 페이지
-![image](https://github.com/user-attachments/assets/385a82aa-3de7-431f-bc06-5171cdee8fc2)
-![image (1)](https://github.com/user-attachments/assets/ca1fe463-6710-4d0b-be9d-5e878f681021)
-
-  
 ###  ✔️ 로그인한 유저의 이력서 불러오기
 ###  ✔️ 로그인하지 않은 유저의 경우 로그인 페이지로 이동
 ###  ✔️ 내 pc에 있는 파일 업로드
@@ -115,15 +116,21 @@ https://teamsparta.notion.site/B08-6b1cc4ee67bf4afdb4b7f584ea810552
 ###  ✔️ 새 이력서 작성, 수정 가능
 ###  ✔️ 필수 필드 미입력시 알림창으로 확인
 ###  ✔️ 이력서 삭제 가능 
+![image](https://github.com/user-attachments/assets/385a82aa-3de7-431f-bc06-5171cdee8fc2)
+![image (1)](https://github.com/user-attachments/assets/ca1fe463-6710-4d0b-be9d-5e878f681021)
+
+  
+
 <br>
 <br>
   
 # 마이페이지
-<img width="1512" alt="스크린샷 2024-07-15 오전 12 32 01" src="https://github.com/user-attachments/assets/4056845b-0ff6-4d5a-acaf-08d22d588683">
-  
 ###  ✔️ 로그인이 되어있으면 헤더에서 마이페이지, 로그아웃을 선택하여 이동 가능 
 ###  ✔️ 로그인한 유저의 정보를 불러온 후 이미지, 이메일, 닉네임 수정 기능 구현
 ###  ✔️ 프로필 사진 기본 이미지로 변경 가능 
+<img width="1512" alt="스크린샷 2024-07-15 오전 12 32 01" src="https://github.com/user-attachments/assets/4056845b-0ff6-4d5a-acaf-08d22d588683">
+  
+
 <br>
 <br>
 
@@ -148,9 +155,136 @@ https://teamsparta.notion.site/B08-6b1cc4ee67bf4afdb4b7f584ea810552
 <br>
 
 
+## 📂 폴더 구조
+
 <details>
-<summary>📂 폴더구조</summary>
+<summary>폴더 구조</summary>
 <br>
+
+```
+
+📦 MyLog
+├── 📜 README.md
+├── 📜 index.html
+├── 📜 package.json
+├── 📂 public
+│   └── 📜 vite.svg
+├── 📂 src
+│   ├── 📜 App.jsx
+│   ├── 📂 api
+│   │   └── 📜 authApi.js
+│   ├── 📂 assets
+│   │   ├── 📜 MyLogLogo_1.svg
+│   │   ├── 📜 MyLogLogo_blue_bold.png
+│   │   └── 📜 No_image_available.png
+│   ├── 📂 components
+│   │   ├── 📂 AuthStatus
+│   │   │   └── 📜 AuthStatus.jsx
+│   │   ├── 📂 Common
+│   │   │   ├── 📜 Button.jsx
+│   │   │   ├── 📜 Input.jsx
+│   │   │   └── 📜 LoadingBar.jsx
+│   │   ├── 📂 DetailPage
+│   │   │   ├── 📜 ArticleDisplay.jsx
+│   │   │   ├── 📜 CommentDisplay.jsx
+│   │   │   └── 📜 CommentInput.jsx
+│   │   ├── 📂 LoginComponents
+│   │   │   ├── 📜 LoginForm.jsx
+│   │   │   └── 📜 SocialSection.jsx
+│   │   ├── 📂 MainPage
+│   │   │   ├── 📜 Articles.jsx
+│   │   │   ├── 📜 Header.jsx
+│   │   │   └── 📜 Search.jsx
+│   │   ├── 📂 MyPage
+│   │   │   └── 📜 UserProfile.jsx
+│   │   ├── 📂 RegisterComponents
+│   │   │   └── 📜 RegisterForm.jsx
+│   │   └── 📂 SubmitPage
+│   │       ├── 📜 ArticleCreateForm.jsx
+│   │       └── 📜 ArticleUpdateForm.jsx
+│   ├── 📂 hooks
+│   │   └── 📜 useInput.jsx
+│   ├── 📂 icons
+│   │   ├── 📜 DiscordIcon.jsx
+│   │   ├── 📜 GithubIcon.jsx
+│   │   ├── 📜 GoogleIcon.jsx
+│   │   ├── 📜 KaKaoIcon.jsx
+│   │   └── 📜 SlackIcon.jsx
+│   ├── 📜 main.jsx
+│   ├── 📂 pages
+│   │   ├── 📂 DetailPage
+│   │   │   └── 📜 DetailPage.jsx
+│   │   ├── 📂 EditProfilePage
+│   │   │   └── 📜 EditProfile.jsx
+│   │   ├── 📂 ErrorPage
+│   │   │   └── 📜 NotFoundPage.jsx
+│   │   ├── 📂 LoadingPage
+│   │   │   └── 📜 LoadingPage.jsx
+│   │   ├── 📂 LoginPage
+│   │   │   └── 📜 LoginPage.jsx
+│   │   ├── 📂 MainPage
+│   │   │   └── 📜 MainPage.jsx
+│   │   ├── 📂 MyPage
+│   │   │   └── 📜 MyPage.jsx
+│   │   ├── 📂 RegisterPage
+│   │   │   └── 📜 RegisterPage.jsx
+│   │   └── 📂 SubmitPage
+│   │       ├── 📜 ArticleCreatePage.jsx
+│   │       └── 📜 ArticleUpdatePage.jsx
+│   ├── 📂 redux
+│   │   ├── 📂 slices
+│   │   │   ├── 📜 authSlice.js
+│   │   │   └── 📜 userProfileSlice.js
+│   │   └── 📜 store.js
+│   ├── 📂 shared
+│   │   └── 📜 Router.jsx
+│   ├── 📂 styles
+│   │   ├── 📂 Common
+│   │   │   ├── 📜 ButtonStyle.js
+│   │   │   ├── 📜 InputStyle.js
+│   │   │   └── 📜 LoadingBarStyle.js
+│   │   ├── 📂 Detail
+│   │   │   ├── 📜 CommentDisplayStyle.js
+│   │   │   ├── 📜 CommentStyle.js
+│   │   │   ├── 📜 DetailEditStyle.js
+│   │   │   └── 📜 DetailStyle.js
+│   │   ├── 📂 ErrorPage
+│   │   │   └── 📜 NotFoundPageStyle.js
+│   │   ├── 📂 GlobalStyle
+│   │   │   ├── 📜 AppStyle.js
+│   │   │   ├── 📜 GlobalStyle.js
+│   │   │   └── 📜 Theme.js
+│   │   ├── 📂 LoginComponents
+│   │   │   ├── 📜 LoginStyle.js
+│   │   │   └── 📜 SocialLoginStyle.js
+│   │   ├── 📂 MainPage
+│   │   │   ├── 📜 HeaderStyle.js
+│   │   │   └── 📜 MainStyle.js
+│   │   ├── 📂 ProfilePage
+│   │   │   ├── 📜 ProfileEditPageStyle.js
+│   │   │   └── 📜 ProfilePageStyle.js
+│   │   ├── 📂 Register
+│   │   │   └── 📜 RegisterStyle.js
+│   │   └── 📂 WriteStyle
+│   │       └── 📜 WriteStyle.js
+│   ├── 📂 supabase
+│   │   └── 📜 supabase.js
+│   └── 📂 utils
+│       ├── 📂 common
+│       │   └── 📜 scrollToTop.js
+│       └── 📂 validators
+│           ├── 📜 index.js
+│           ├── 📜 validateCheckDuplicate.js
+│           ├── 📜 validateDateFormat.js
+│           ├── 📜 validateEmailFormat.js
+│           ├── 📜 validateLength.js
+│           ├── 📜 validateNameLength.js
+│           ├── 📜 validatePasswordFormat.js
+│           └── 📜 validatePasswordMatch.js
+├── 📜 vite.config.js
+└── 📜 yarn.lock
+
+```
 
 </details>
 
