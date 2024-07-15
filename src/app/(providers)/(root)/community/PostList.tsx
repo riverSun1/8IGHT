@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Database } from "@/supabase/types";
 import { createClient } from "@/supabase/client";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import LikeModal from "./LikeModal";
@@ -8,14 +7,11 @@ import { useAuth } from "@/contexts/auth.context";
 import { IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import { Community_Post } from "@/types/communtypes";
 
 interface PostListProps {
-  posts: Database["public"]["Tables"]["community_post"]["Row"][];
-  setPosts: React.Dispatch<
-    React.SetStateAction<
-      Database["public"]["Tables"]["community_post"]["Row"][]
-    >
-  >;
+  posts: Community_Post[];
+  setPosts: React.Dispatch<React.SetStateAction<Community_Post[]>>;
 }
 
 const PostList: React.FC<PostListProps> = ({ posts, setPosts }) => {
@@ -217,9 +213,7 @@ const PostList: React.FC<PostListProps> = ({ posts, setPosts }) => {
     setEditPost(postId);
   };
 
-  const handlePostUpdated = (
-    updatedPost: Database["public"]["Tables"]["community_post"]["Row"]
-  ) => {
+  const handlePostUpdated = (updatedPost: Community_Post) => {
     setPosts((prevPosts) =>
       prevPosts.map((post) => (post.id === updatedPost.id ? updatedPost : post))
     );
@@ -265,7 +259,7 @@ const PostList: React.FC<PostListProps> = ({ posts, setPosts }) => {
                 />
                 <span className="text-lg font-semibold text-gray-800">
                   {postUserData[post.user_id]?.nickname ||
-                    postUserData[post.user_id]?.email ||
+                    postUserData[post?.user_id]?.email ||
                     ""}
                 </span>
                 {isAuthor && (
@@ -353,7 +347,7 @@ const PostList: React.FC<PostListProps> = ({ posts, setPosts }) => {
             ]
           }
         />
-      )} 
+      )}
     </div>
   );
 };
