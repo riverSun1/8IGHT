@@ -92,7 +92,7 @@ https://teamsparta.notion.site/B08-6b1cc4ee67bf4afdb4b7f584ea810552
 <br>
 
 # 소셜 페이지
-<image>
+<img width="1624" alt="스크린샷 2024-07-15 오전 11 50 56" src="https://github.com/user-attachments/assets/6ade263a-0cc7-4c3f-a084-8948bbd552f7">
 
 ###  ✔️ 로그인한 유저의 프로필 불러오기
 ###  ✔️ 게시글 불러오기
