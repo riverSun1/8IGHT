@@ -76,7 +76,6 @@ const ResumePage = () => {
 
       if (selectedFileURL) {
         const fileName = selectedFileURL.split("/").pop();
-        console.log("fileName => ", fileName);
 
         const { error: deleteFileError } = await supabase.storage
           .from("uploads")
@@ -86,6 +85,16 @@ const ResumePage = () => {
           console.error("Error deleting file from storage:", deleteFileError);
           error = deleteFileError;
         }
+      }
+
+      const { error: deleteResumeError } = await supabase
+        .from("resumes")
+        .delete()
+        .eq("id", selectedBoxId);
+
+      if (deleteResumeError) {
+        console.error("Error deleting resume record:", deleteResumeError);
+        error = deleteResumeError;
       }
 
       const { error: deleteFileUploadError } = await supabase
@@ -119,18 +128,13 @@ const ResumePage = () => {
   };
 
   const confirmUpload = async () => {
-    console.log("confirmUpload called");
     if (!selectedFile) {
-      console.log("No file selected");
       return;
     }
-
-    console.log("File selected: ", selectedFile);
 
     const fileName = `${Date.now()}_${btoa(
       unescape(encodeURIComponent(selectedFile.name))
     )}`;
-    console.log("Uploading file as: ", fileName);
 
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from("uploads")
@@ -139,8 +143,6 @@ const ResumePage = () => {
     if (uploadError) {
       console.error("Error uploading file:", uploadError.message);
     } else {
-      console.log("File uploaded successfully: ", uploadData);
-
       const fileURL = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/uploads/public/${fileName}`;
       const { data: insertData, error: insertError } = await supabase
         .from("file_uploads")
@@ -159,8 +161,6 @@ const ResumePage = () => {
           insertError.message
         );
       } else if (insertData && insertData.length > 0) {
-        console.log("File URL saved to database: ", insertData);
-
         setWorkBoxes((prevBoxes) => [
           ...prevBoxes,
           {
@@ -184,7 +184,6 @@ const ResumePage = () => {
   const handleDownload = (id: string) => {
     const workBox = workBoxes.find((box) => box.id === id);
     if (workBox && workBox.fileURL) {
-      console.log("Downloading file from URL: ", workBox.fileURL);
       window.open(workBox.fileURL, "_blank");
     }
   };

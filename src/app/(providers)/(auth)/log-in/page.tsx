@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useAuth } from "@/contexts/auth.context";
+import { useLoading } from "@/contexts/loading.context";
 import AuthButton from "../_components/Button";
 import AuthInput from "../_components/Input";
 
@@ -15,6 +16,7 @@ function LoginPage() {
   const [emailError, setEmailError] = useState<boolean>(true);
   const [password, setPassword] = useState<string>("");
   const [passwordError, setPasswordError] = useState<boolean>(true);
+  const { openLoading, closeLoading } = useLoading();
 
   const isAllOkay =
     !emailError && !passwordError && email !== "" && password !== ""
@@ -27,9 +29,16 @@ function LoginPage() {
     }
     const response = await logIn(email, password);
     if (response.status) {
+      openLoading();
       return logInRouter.replace("/");
     }
   };
+
+  useEffect(() => {
+    return () => {
+      closeLoading();
+    };
+  }, []);
 
   return (
     <>
