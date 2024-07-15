@@ -1,5 +1,9 @@
-import React, { useEffect, useState } from "react";
 import { createClient } from "@/supabase/client";
+// import { Database } from "@/supabase/types";
+import CommentIcon from "@mui/icons-material/Comment";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 import LikeModal from "./LikeModal";
 import EditPostModal from "./EditPostModal";
@@ -150,6 +154,12 @@ const PostList: React.FC<PostListProps> = ({ posts, setPosts }) => {
       console.error("Error updating like count:", error);
     }
   };
+
+  const handleCommentModalClose = () => {
+    setCommentModalOpen(null);
+  };
+
+  console.log("Rendering posts:", posts);
 
   const handleLikeTextClick = async (postId: string) => {
     setLikeModalOpen(postId);
