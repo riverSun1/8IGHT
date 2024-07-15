@@ -87,6 +87,16 @@ const ResumePage = () => {
         }
       }
 
+      const { error: deleteResumeError } = await supabase
+        .from("resumes")
+        .delete()
+        .eq("id", selectedBoxId);
+
+      if (deleteResumeError) {
+        console.error("Error deleting resume record:", deleteResumeError);
+        error = deleteResumeError;
+      }
+
       const { error: deleteFileUploadError } = await supabase
         .from("file_uploads")
         .delete()
@@ -208,8 +218,8 @@ const ResumePage = () => {
               date={box.created_at?.split("T")[0] || ""}
               onDelete={() => handleDelete(box.id, box.fileURL)}
               onEdit={() => handleEdit(box.id)}
+              onTitleClick={() => handleDownload(box.id)}
               isFileUpload={!!box.fileURL}
-              fileURL={box.fileURL}
             />
           </div>
         ))}

@@ -44,6 +44,45 @@ export type Database = {
           },
         ]
       }
+      community_post_comments: {
+        Row: {
+          createdAt: string
+          id: string
+          postId: string
+          text: string | null
+          userId: string
+        }
+        Insert: {
+          createdAt?: string
+          id?: string
+          postId: string
+          text?: string | null
+          userId: string
+        }
+        Update: {
+          createdAt?: string
+          id?: string
+          postId?: string
+          text?: string | null
+          userId?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "community_post_comments_postId_fkey"
+            columns: ["postId"]
+            isOneToOne: false
+            referencedRelation: "community_post"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "community_post_comments_userId_fkey"
+            columns: ["userId"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       file_uploads: {
         Row: {
           created_at: string
@@ -67,6 +106,39 @@ export type Database = {
           id?: string
         }
         Relationships: []
+      }
+      post_likes: {
+        Row: {
+          id: string
+          post_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          id?: string
+          post_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          id?: string
+          post_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_likes_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "community_post"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_likes_user_id_fkey1"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       resumes: {
         Row: {
