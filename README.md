@@ -4,20 +4,19 @@
 
 ## 개발 기간
 ### 2024.07.08 ~ 2024.07.15
+<br>
 
 ## Job-notice
 > 🔗 https://job-notice.vercel.app/
+<br>
 
 ## Design
 https://www.figma.com/design/EqquHXHynzubNFoAZbSOL9/job-notice?node-id=0-1&t=gKrD0WkJyzQBAJPt-0
-## Notion
-https://teamsparta.notion.site/B08-6b1cc4ee67bf4afdb4b7f584ea810552
-
+<br>
 <br>
 <br>
 
 ## 팀원 소개
-### B08조
 <table>
   <tbody>
     <tr>
